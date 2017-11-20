@@ -1,5 +1,9 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.contracts;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+import javax.validation.ValidationException;
+
 public enum GenderDto {
     FEMALE("Female"),
     MALE("Male"),
@@ -13,5 +17,13 @@ public enum GenderDto {
 
     public String getValue() {
         return value;
+    }
+
+    @JsonCreator
+    public static GenderDto fromString(String value) {
+        GenderDto gender = GenderDto.valueOf(value);
+        if (gender == null)
+            throw new ValidationException("Unknown gender: " + value);
+        return gender;
     }
 }

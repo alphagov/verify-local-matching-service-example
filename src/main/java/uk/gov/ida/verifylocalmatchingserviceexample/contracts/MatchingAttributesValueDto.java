@@ -12,7 +12,6 @@ import javax.validation.constraints.NotNull;
 public class MatchingAttributesValueDto<T> {
     @NotEmpty
     private T value;
-    @NotNull
     private DateTime from;
     private DateTime to;
     @NotNull
