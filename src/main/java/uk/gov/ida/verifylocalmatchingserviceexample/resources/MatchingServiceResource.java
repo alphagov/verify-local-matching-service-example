@@ -1,5 +1,6 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.resources;
 
+import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
 
 import javax.validation.Valid;
@@ -18,8 +19,7 @@ public class MatchingServiceResource {
 
     @POST
     public Response findMatchingUser(@NotNull @Valid MatchingServiceRequestDto matchingServiceRequest) {
-        return Response.ok()
-                .entity("{\"result\": \"match\"}")
+        return Response.ok(MatchStatusResponseDto.MATCH)
                 .build();
     }
 }

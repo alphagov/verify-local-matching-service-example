@@ -27,4 +27,20 @@ public class MatchingAttributesValueDto<T> {
         this.to = to;
         this.verified = verified;
     }
+
+    public T getValue() {
+        return value;
+    }
+
+    public DateTime getFrom() {
+        return from;
+    }
+
+    public DateTime getTo() {
+        return to;
+    }
+
+    public Boolean getVerified() {
+        return verified;
+    }
 }

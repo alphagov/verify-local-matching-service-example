@@ -37,4 +37,28 @@ public class MatchingAttributesDto {
         this.dateOfBirth = dateOfBirth;
         this.addresses = addresses;
     }
+
+    public MatchingAttributesValueDto<LocalDate> getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public MatchingAttributesValueDto<String> getFirstName() {
+        return firstName;
+    }
+
+    public MatchingAttributesValueDto<String> getMiddleNames() {
+        return middleNames;
+    }
+
+    public List<MatchingAttributesValueDto<String>> getSurnames() {
+        return surnames;
+    }
+
+    public MatchingAttributesValueDto<GenderDto> getGender() {
+        return gender;
+    }
+
+    public List<AddressDto> getAddresses() {
+        return addresses;
+    }
 }
