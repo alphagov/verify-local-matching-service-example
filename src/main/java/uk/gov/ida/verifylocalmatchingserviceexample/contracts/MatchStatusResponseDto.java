@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.ValidationException;
 import java.util.Arrays;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -11,7 +12,6 @@ public enum MatchStatusResponseDto {
     MATCH("match"),
     NO_MATCH("no-match");
 
-    @JsonProperty(value = "result")
     private String result;
 
     MatchStatusResponseDto(String result) {
@@ -23,7 +23,7 @@ public enum MatchStatusResponseDto {
         return Arrays.stream(MatchStatusResponseDto.values())
                 .filter(e -> e.result.equals(value))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException(String.format("Unknown match status %s.", value)));
+                .orElseThrow(() -> new ValidationException(String.format("Unknown match status %s.", value)));
     }
 
     public String getResult() {
