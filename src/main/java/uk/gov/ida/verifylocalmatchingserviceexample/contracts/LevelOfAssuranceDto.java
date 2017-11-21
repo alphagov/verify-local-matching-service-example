@@ -3,6 +3,7 @@ package uk.gov.ida.verifylocalmatchingserviceexample.contracts;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 import javax.validation.ValidationException;
+import java.util.Optional;
 
 public enum LevelOfAssuranceDto {
     LEVEL_1,
@@ -12,9 +13,8 @@ public enum LevelOfAssuranceDto {
 
     @JsonCreator
     public static LevelOfAssuranceDto fromString(String value) {
-        LevelOfAssuranceDto levelOfAssurance = LevelOfAssuranceDto.valueOf(value);
-        if (levelOfAssurance == null)
-            throw new ValidationException("Unknown level of assurance: " + value);
-        return levelOfAssurance;
+        return Optional
+                .ofNullable(LevelOfAssuranceDto.valueOf(value))
+                .orElseThrow(() -> new ValidationException(String.format("Unknown level of assurance %s.", value)));
     }
 }

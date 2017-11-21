@@ -7,6 +7,7 @@ import io.dropwizard.jersey.validation.ValidationErrorMessage;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.ClassRule;
 import org.junit.Test;
+import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
 
 import javax.ws.rs.client.Entity;
@@ -40,17 +41,13 @@ public class MatchingServiceResourceTest {
     }
 
     @Test
-    public void shouldContainResultForSuccessResponse() {
+    public void shouldContainMatchForSuccessResponse() {
         MatchingServiceRequestDto matchingServiceRequest = aMatchingServiceRequestDtoBuilder().build();
 
         Response response = postToMatchingService(matchingServiceRequest);
 
-        HashMap<String, String> matchResponse = response.readEntity(new GenericType<HashMap<String, String>>() {{
-        }});
-        assertEquals(matchResponse.keySet(), new HashSet<String>() {{
-            add("result");
-        }});
-        assertEquals(matchResponse.get("result"), "match");
+        MatchStatusResponseDto matchStatusResponseDto = response.readEntity(MatchStatusResponseDto.class);
+        assertEquals(matchStatusResponseDto.getResult(), MatchStatusResponseDto.MATCH.getResult());
     }
 
     @Test
