@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MatchingAttributesValueDto<T> {
-    @NotEmpty
+    @NotNull
     private T value;
     private DateTime from;
     private DateTime to;
@@ -21,7 +21,7 @@ public class MatchingAttributesValueDto<T> {
     public MatchingAttributesValueDto(@JsonProperty("value") T value,
                                       @JsonProperty("from") DateTime from,
                                       @JsonProperty("to") DateTime to,
-                                      @JsonProperty("verified") boolean verified) {
+                                      @JsonProperty("verified") Boolean verified) {
         this.value = value;
         this.from = from;
         this.to = to;

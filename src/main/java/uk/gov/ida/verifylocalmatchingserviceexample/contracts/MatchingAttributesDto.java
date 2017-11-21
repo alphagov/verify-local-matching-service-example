@@ -17,6 +17,7 @@ public class MatchingAttributesDto {
     @NotEmpty
     private List<MatchingAttributesValueDto<String>> surnames;
     private MatchingAttributesValueDto<GenderDto> gender;
+    @Valid
     @NotNull
     private MatchingAttributesValueDto<LocalDate> dateOfBirth;
     @Valid

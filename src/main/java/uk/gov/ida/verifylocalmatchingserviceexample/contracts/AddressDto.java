@@ -2,7 +2,6 @@ package uk.gov.ida.verifylocalmatchingserviceexample.contracts;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 
@@ -22,7 +21,7 @@ public class AddressDto {
     private String uprn;
 
     @JsonCreator
-    public AddressDto(@JsonProperty("verified") boolean verified,
+    public AddressDto(@JsonProperty("verified") Boolean verified,
                       @JsonProperty("fromDate") DateTime fromDate,
                       @JsonProperty("toDate") DateTime toDate,
                       @JsonProperty("postCode") String postCode,

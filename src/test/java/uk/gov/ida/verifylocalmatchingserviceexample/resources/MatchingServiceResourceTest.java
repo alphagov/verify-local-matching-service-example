@@ -3,22 +3,19 @@ package uk.gov.ida.verifylocalmatchingserviceexample.resources;
 import io.dropwizard.jersey.jackson.JsonProcessingExceptionMapper;
 import io.dropwizard.jersey.validation.JerseyViolationExceptionMapper;
 import io.dropwizard.testing.junit.ResourceTestRule;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.ClassRule;
 import org.junit.Test;
-import uk.gov.ida.verifylocalmatchingserviceexample.contracts.*;
+import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingServiceRequestDtoBuilder.aMatchingServiceRequestDtoBuilder;
 
 public class MatchingServiceResourceTest {
     @ClassRule
@@ -30,16 +27,7 @@ public class MatchingServiceResourceTest {
 
     @Test
     public void shouldReturnOKResponse() {
-        List<MatchingAttributesValueDto<String>> surnames = new ArrayList<>();
-        MatchingAttributesValueDto<String> surname = new MatchingAttributesValueDto<String>("surname1", null, null, false);
-        surnames.add(surname);
-        ArrayList<AddressDto> addressDtos = new ArrayList<>();
-        AddressDto addressDto = new AddressDto(false, DateTime.now(), null, null, null, null, null);
-        addressDtos.add(addressDto);
-        MatchingAttributesValueDto<LocalDate> dob = new MatchingAttributesValueDto<LocalDate>(LocalDate.now(), null, null, false);
-        MatchingAttributesDto matchingAttributesDto = new MatchingAttributesDto(null, null, surnames, null, dob, addressDtos);
-        MatchingServiceRequestDto matchingServiceRequest =
-                new MatchingServiceRequestDto(matchingAttributesDto, null, "esds", "asdsd", LevelOfAssuranceDto.LEVEL_1);
+        MatchingServiceRequestDto matchingServiceRequest = aMatchingServiceRequestDtoBuilder().build();
 
         Response response = resources.target("/match-user")
                 .request()

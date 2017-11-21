@@ -14,7 +14,6 @@ public class MatchingServiceRequestDto {
     @NotNull
     private MatchingAttributesDto matchingAttributesDto;
     private Cycle3AttributesDto cycle3AttributesDto;
-    @JsonProperty("hashedPid")
     @NotEmpty
     private String hashedPid;
     @NotEmpty
