@@ -1,16 +1,20 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.contracts;
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttributesValueDtoBuilder;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.util.LinkedList;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static uk.gov.ida.verifylocalmatchingserviceexample.builders.AddressDtoBuilder.aAddressDtoBuilder;
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttributesDtoBuilder.aMatchingAttributesDtoBuilder;
 
 public class MatchingAttributesDtoTest {
@@ -63,8 +67,24 @@ public class MatchingAttributesDtoTest {
     }
 
     @Test
+    public void shouldReturnConstraintViolationWhenAddressIsMissingRequiredFields() {
+        MatchingAttributesDto matchingAttributesDto = aMatchingAttributesDtoBuilder()
+                .withAddresses(new LinkedList<AddressDto>() {{
+                    add(aAddressDtoBuilder().withVerified(null).build());
+                }})
+                .build();
+
+        Set<ConstraintViolation<MatchingAttributesDto>> constraintViolations = validator.validate(matchingAttributesDto);
+
+        assertEquals(1, constraintViolations.size());
+        ConstraintViolation<MatchingAttributesDto> violation = constraintViolations.iterator().next();
+        assertEquals("may not be null", violation.getMessage());
+        assertEquals("addresses[0].verified", violation.getPropertyPath().toString());
+    }
+
+    @Test
     public void shouldReturnConstraintViolationWhenDateOfBirthIsNull() {
-        MatchingAttributesDto matchingAttributesDto =aMatchingAttributesDtoBuilder()
+        MatchingAttributesDto matchingAttributesDto = aMatchingAttributesDtoBuilder()
                 .withDateOfBirth(null)
                 .build();
 
@@ -74,5 +94,20 @@ public class MatchingAttributesDtoTest {
         ConstraintViolation<MatchingAttributesDto> violation = constraintViolations.iterator().next();
         assertEquals("may not be null", violation.getMessage());
         assertEquals("dateOfBirth", violation.getPropertyPath().toString());
+    }
+
+    @Test
+    public void shouldReturnConstraintViolationWhenDateOfBirthIsMissingRequiredFields() {
+        MatchingAttributesDto matchingAttributesDto = aMatchingAttributesDtoBuilder()
+                .withDateOfBirth(MatchingAttributesValueDtoBuilder
+                        .<LocalDate>aMatchingAttributesValueDtoBuilder().build())
+                .build();
+
+        Set<ConstraintViolation<MatchingAttributesDto>> constraintViolations = validator.validate(matchingAttributesDto);
+
+        assertEquals(1, constraintViolations.size());
+        ConstraintViolation<MatchingAttributesDto> violation = constraintViolations.iterator().next();
+        assertEquals("may not be null", violation.getMessage());
+        assertEquals("dateOfBirth.value", violation.getPropertyPath().toString());
     }
 }

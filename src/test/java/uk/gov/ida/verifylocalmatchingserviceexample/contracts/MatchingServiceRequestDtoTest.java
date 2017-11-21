@@ -11,6 +11,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttributesDtoBuilder.aMatchingAttributesDtoBuilder;
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingServiceRequestDtoBuilder.aMatchingServiceRequestDtoBuilder;
 
 public class MatchingServiceRequestDtoTest {
@@ -45,6 +46,20 @@ public class MatchingServiceRequestDtoTest {
         ConstraintViolation<MatchingServiceRequestDto> violation = constraintViolations.iterator().next();
         assertEquals("may not be null", violation.getMessage());
         assertEquals("matchingAttributesDto", violation.getPropertyPath().toString());
+    }
+
+    @Test
+    public void shouldReturnConstraintViolationWhenMatchingAttributesDtoIsMissingRequiredFields() {
+        MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
+                .withMatchingAttributesDto(aMatchingAttributesDtoBuilder().withDateOfBirth(null).build())
+                .build();
+
+        Set<ConstraintViolation<MatchingServiceRequestDto>> constraintViolations = validator.validate(matchingServiceRequestDto);
+
+        assertEquals(1, constraintViolations.size());
+        ConstraintViolation<MatchingServiceRequestDto> violation = constraintViolations.iterator().next();
+        assertEquals("may not be null", violation.getMessage());
+        assertEquals("matchingAttributesDto.dateOfBirth", violation.getPropertyPath().toString());
     }
 
     @Test
