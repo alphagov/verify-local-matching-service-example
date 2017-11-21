@@ -40,6 +40,16 @@ dependencies {
     testRuntime("org.junit.jupiter:junit-jupiter-engine:$jUnitJupiterVersion")
 }
 
+distributions {
+    main {
+        contents {
+            from {
+                ['README.md', 'verify-local-matching-service-example.yml']
+            }
+        }
+    }
+}
+
 run {
     args = ["server", "verify-local-matching-service-example.yml"]
 }
