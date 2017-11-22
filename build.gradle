@@ -1,0 +1,41 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+project.ext {
+    dropwizardVersion = '1.2.0'
+    jUnitVersion = '4.12'
+    mockitoVersion = '2.12.0'
+}
+
+dependencies {
+    compile("io.dropwizard:dropwizard-core:$dropwizardVersion")
+
+    testCompile(
+            "io.dropwizard:dropwizard-testing:$dropwizardVersion",
+            "org.mockito:mockito-core:$mockitoVersion",
+            "junit:junit:$jUnitVersion",
+    )
+}
+
+distributions {
+    main {
+        contents {
+            from {
+                ['README.md', 'verify-local-matching-service-example.yml']
+            }
+        }
+    }
+}
+
+run {
+    args = ["server", "verify-local-matching-service-example.yml"]
+}
+
+mainClassName = 'uk.gov.ida.verifylocalmatchingserviceexample.VerifyLocalMatchingServiceExampleApplication'

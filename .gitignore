@@ -1,4 +1,5 @@
 .gradle/
+logs/
 out/
 build/
 .DS_Store
