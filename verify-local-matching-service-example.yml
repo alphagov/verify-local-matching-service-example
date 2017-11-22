@@ -20,3 +20,7 @@ logging:
     - type: file
       currentLogFilename: logs/verify-local-matching-service-example.log
       archivedLogFilenamePattern: logs/verify-local-matching-service-example.log.%d.gz
+
+database:
+  driverClass: org.sqlite.JDBC
+  url: jdbc:sqlite:verify_local_matching_service.db

@@ -5,20 +5,25 @@ import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
+import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
+import uk.gov.ida.verifylocalmatchingserviceexample.dao.VerifiedPidDAO;
 import uk.gov.ida.verifylocalmatchingserviceexample.resources.MatchingServiceResource;
+import uk.gov.ida.verifylocalmatchingserviceexample.service.Cycle0MatchingService;
 
 public class VerifyLocalMatchingServiceExampleApplication extends Application<VerifyLocalMatchingServiceExampleConfiguration>{
     public static void main(String[] args) throws Exception {
-        if(args.length == 0) {
-            args[0] = "server";
-            args[1] = "verify-local-matching-service-example.yml";
-        }
         new VerifyLocalMatchingServiceExampleApplication().run(args);
     }
 
     @Override
     public void run(VerifyLocalMatchingServiceExampleConfiguration configuration, Environment environment) throws Exception {
-        environment.jersey().register(new MatchingServiceResource());
+        Jdbi jdbi = Jdbi.create(configuration.getDataSourceFactory().getUrl());
+        jdbi.installPlugin(new SqlObjectPlugin());
+        VerifiedPidDAO verifiedPidDAO = jdbi.onDemand(VerifiedPidDAO.class);
+        Cycle0MatchingService cycle0MatchingService = new Cycle0MatchingService(verifiedPidDAO);
+        environment.jersey().register(new MatchingServiceResource(cycle0MatchingService));
     }
 
     @Override

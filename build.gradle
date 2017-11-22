@@ -15,7 +15,12 @@ project.ext {
 }
 
 dependencies {
-    compile("io.dropwizard:dropwizard-core:$dropwizardVersion")
+    compile(
+            "io.dropwizard:dropwizard-core:$dropwizardVersion",
+            "com.github.arteam:dropwizard-jdbi3:1.2.1",
+            "org.jdbi:jdbi3-sqlobject:3.0.0-rc2",
+            "org.xerial:sqlite-jdbc:3.21.0"
+    )
 
     testCompile(
             "io.dropwizard:dropwizard-testing:$dropwizardVersion",
