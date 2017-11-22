@@ -1,4 +1,4 @@
-# 2. Record architecture decisions
+# 2. Http status code for validation errors
 
 Date: 2017-11-21
 
