@@ -1,6 +1,5 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.contracts;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -12,21 +11,28 @@ import javax.validation.constraints.NotNull;
 public class MatchingServiceRequestDto {
     @Valid
     @NotNull
+    @JsonProperty("matchingDataset")
     private MatchingAttributesDto matchingAttributesDto;
+    @JsonProperty("cycle3Dataset")
     private Cycle3AttributesDto cycle3AttributesDto;
+    @JsonProperty("hashedPid")
     @NotEmpty
     private String hashedPid;
+    @JsonProperty("matchId")
     @NotEmpty
     private String matchId;
+    @JsonProperty("levelOfAssurance")
     @NotNull
     private LevelOfAssuranceDto levelOfAssurance;
 
-    @JsonCreator
-    public MatchingServiceRequestDto(@JsonProperty("matchingDataset") MatchingAttributesDto matchingAttributesDto,
-                                     @JsonProperty("cycle3Dataset") Cycle3AttributesDto cycle3AttributesDto,
-                                     @JsonProperty("hashedPid") String hashedPid,
-                                     @JsonProperty("matchId") String matchId,
-                                     @JsonProperty("levelOfAssurance") LevelOfAssuranceDto levelOfAssurance) {
+    public MatchingServiceRequestDto() {
+    }
+
+    public MatchingServiceRequestDto(MatchingAttributesDto matchingAttributesDto,
+                                     Cycle3AttributesDto cycle3AttributesDto,
+                                     String hashedPid,
+                                     String matchId,
+                                     LevelOfAssuranceDto levelOfAssurance) {
         this.matchingAttributesDto = matchingAttributesDto;
         this.cycle3AttributesDto = cycle3AttributesDto;
         this.hashedPid = hashedPid;

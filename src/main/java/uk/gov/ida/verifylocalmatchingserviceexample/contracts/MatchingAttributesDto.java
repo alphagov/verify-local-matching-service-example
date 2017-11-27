@@ -1,6 +1,5 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.contracts;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -12,25 +11,32 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MatchingAttributesDto {
+    @JsonProperty("firstName")
     private MatchingAttributesValueDto<String> firstName;
+    @JsonProperty("middleNames")
     private MatchingAttributesValueDto<String> middleNames;
+    @JsonProperty("surnames")
     @NotEmpty
     private List<MatchingAttributesValueDto<String>> surnames;
+    @JsonProperty("gender")
     private MatchingAttributesValueDto<GenderDto> gender;
+    @JsonProperty("dateOfBirth")
     @Valid
     @NotNull
     private MatchingAttributesValueDto<LocalDate> dateOfBirth;
+    @JsonProperty("addresses")
     @Valid
     @NotEmpty
     private List<AddressDto> addresses;
 
-    @JsonCreator
-    public MatchingAttributesDto(@JsonProperty("firstName") MatchingAttributesValueDto<String> firstName,
-                                 @JsonProperty("middleNames") MatchingAttributesValueDto<String> middleNames,
-                                 @JsonProperty("surnames") List<MatchingAttributesValueDto<String>> surnames,
-                                 @JsonProperty("gender") MatchingAttributesValueDto<GenderDto> gender,
-                                 @JsonProperty("dateOfBirth") MatchingAttributesValueDto<LocalDate> dateOfBirth,
-                                 @JsonProperty("addresses") List<AddressDto> addresses) {
+    public MatchingAttributesDto() {}
+
+    public MatchingAttributesDto(MatchingAttributesValueDto<String> firstName,
+                                 MatchingAttributesValueDto<String> middleNames,
+                                 List<MatchingAttributesValueDto<String>> surnames,
+                                 MatchingAttributesValueDto<GenderDto> gender,
+                                 MatchingAttributesValueDto<LocalDate> dateOfBirth,
+                                 List<AddressDto> addresses) {
         this.firstName = firstName;
         this.middleNames = middleNames;
         this.surnames = surnames;

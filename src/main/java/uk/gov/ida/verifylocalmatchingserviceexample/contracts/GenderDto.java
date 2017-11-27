@@ -1,6 +1,7 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.contracts;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.validation.ValidationException;
 import java.util.Optional;
