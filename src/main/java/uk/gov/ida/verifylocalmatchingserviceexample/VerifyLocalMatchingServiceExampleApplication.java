@@ -1,5 +1,7 @@
 package uk.gov.ida.verifylocalmatchingserviceexample;
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
@@ -34,5 +36,6 @@ public class VerifyLocalMatchingServiceExampleApplication extends Application<Ve
                         new EnvironmentVariableSubstitutor(false)
                 )
         );
+        bootstrap.getObjectMapper().registerModule(new JodaModule());
     }
 }
