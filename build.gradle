@@ -15,13 +15,34 @@ project.ext {
 }
 
 dependencies {
-    compile("io.dropwizard:dropwizard-core:$dropwizardVersion")
+    compile(
+            "io.dropwizard:dropwizard-core:$dropwizardVersion",
+            "com.github.arteam:dropwizard-jdbi3:1.2.1",
+            "org.jdbi:jdbi3-sqlobject:3.0.0-rc2",
+            "org.xerial:sqlite-jdbc:3.21.0"
+    )
 
     testCompile(
             "io.dropwizard:dropwizard-testing:$dropwizardVersion",
             "org.mockito:mockito-core:$mockitoVersion",
             "junit:junit:$jUnitVersion",
+            'io.dropwizard:dropwizard-client:1.2.1',
+            "com.h2database:h2:1.4.196"
     )
+}
+
+sourceSets {
+    integrationTest {
+        java {
+            srcDir 'src/integration-test/java'
+        }
+        resources {
+            srcDir 'src/integration-test/resources'
+        }
+        compileClasspath += sourceSets.main.runtimeClasspath
+        compileClasspath += sourceSets.test.runtimeClasspath
+        compileClasspath += sourceSets.test.output
+    }
 }
 
 distributions {

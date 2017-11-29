@@ -9,7 +9,7 @@ server:
   adminContextPath: /admin
   connector:
     type: http
-    port: ${PORT:-50500}
+    port: ${PORT:-50510}
 
 # Logging configuration
 # see: http://www.dropwizard.io/1.1.2/docs/manual/configuration.html#logging
@@ -22,5 +22,5 @@ logging:
       archivedLogFilenamePattern: logs/verify-local-matching-service-example.log.%d.gz
 
 database:
-  driverClass: org.sqlite.JDBC
-  url: jdbc:sqlite:verify_local_matching_service.db
+  driverClass: org.h2.Driver
+  url: jdbc:h2:mem:test
