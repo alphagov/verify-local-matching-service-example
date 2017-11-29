@@ -6,11 +6,11 @@ import org.jdbi.v3.core.Jdbi;
 import org.junit.rules.ExternalResource;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
 
-public class H2JDBIRule extends ExternalResource {
+public class TestDatabaseRule extends ExternalResource {
     private Handle handle;
     private DropwizardAppRule<VerifyLocalMatchingServiceExampleConfiguration> appRule;
 
-    public H2JDBIRule(DropwizardAppRule<VerifyLocalMatchingServiceExampleConfiguration> appRule) {
+    public TestDatabaseRule(DropwizardAppRule<VerifyLocalMatchingServiceExampleConfiguration> appRule) {
         this.appRule = appRule;
     }
 

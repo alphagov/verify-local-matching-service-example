@@ -2,14 +2,13 @@ package uk.gov.ida.verifylocalmatchingserviceexample;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.dropwizard.testing.junit.DropwizardAppRule;
-import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
-import uk.gov.ida.verifylocalmatchingserviceexample.rules.H2JDBIRule;
+import uk.gov.ida.verifylocalmatchingserviceexample.rules.TestDatabaseRule;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -24,15 +23,15 @@ public class MatchingServiceResourceTest {
     private static final DropwizardAppRule<VerifyLocalMatchingServiceExampleConfiguration> APP_RULE =
             new DropwizardAppRule<>(VerifyLocalMatchingServiceExampleApplication.class,
                     resourceFilePath("verify-local-matching-service-test.yml"));
-    private static H2JDBIRule h2JDBIRule = new H2JDBIRule(APP_RULE);
+    private static TestDatabaseRule testDatabaseRule = new TestDatabaseRule(APP_RULE);
 
     @ClassRule
-    public static RuleChain chain = RuleChain.outerRule(APP_RULE).around(h2JDBIRule);
+    public static RuleChain chain = RuleChain.outerRule(APP_RULE).around(testDatabaseRule);
 
     @Test
     public void shouldReturnMatchWhenVerifiedPidIsFoundInCycle0Scenario() throws IOException {
         String verifiedPid = "some random string";
-        h2JDBIRule.ensurePidExist(verifiedPid);
+        testDatabaseRule.ensurePidExist(verifiedPid);
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
                 .withHashedPid(verifiedPid)
                 .build();
@@ -49,7 +48,7 @@ public class MatchingServiceResourceTest {
     @Test
     public void shouldReturnNoMatchWhenPidNotFoundInCycle0Scenario() throws IOException {
         String verifiedPid = "some random string";
-        h2JDBIRule.ensurePidDoesNotExist(verifiedPid);
+        testDatabaseRule.ensurePidDoesNotExist(verifiedPid);
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
                 .withHashedPid(verifiedPid)
                 .build();

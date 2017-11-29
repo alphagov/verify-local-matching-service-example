@@ -1,6 +1,5 @@
 package uk.gov.ida.verifylocalmatchingserviceexample;
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
@@ -10,7 +9,7 @@ import io.dropwizard.setup.Environment;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
-import uk.gov.ida.verifylocalmatchingserviceexample.dao.VerifiedPidDAO;
+import uk.gov.ida.verifylocalmatchingserviceexample.dao.VerifiedPid;
 import uk.gov.ida.verifylocalmatchingserviceexample.resources.MatchingServiceResource;
 import uk.gov.ida.verifylocalmatchingserviceexample.service.Cycle0MatchingService;
 
@@ -23,8 +22,8 @@ public class VerifyLocalMatchingServiceExampleApplication extends Application<Ve
     public void run(VerifyLocalMatchingServiceExampleConfiguration configuration, Environment environment) throws Exception {
         Jdbi jdbi = Jdbi.create(configuration.getDataSourceFactory().getUrl());
         jdbi.installPlugin(new SqlObjectPlugin());
-        VerifiedPidDAO verifiedPidDAO = jdbi.onDemand(VerifiedPidDAO.class);
-        Cycle0MatchingService cycle0MatchingService = new Cycle0MatchingService(verifiedPidDAO);
+        VerifiedPid verifiedPid = jdbi.onDemand(VerifiedPid.class);
+        Cycle0MatchingService cycle0MatchingService = new Cycle0MatchingService(verifiedPid);
         environment.jersey().register(new MatchingServiceResource(cycle0MatchingService));
     }
 
