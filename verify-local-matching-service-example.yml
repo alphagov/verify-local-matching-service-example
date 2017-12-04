@@ -24,3 +24,6 @@ logging:
 database:
   driverClass: org.sqlite.JDBC
   url: jdbc:sqlite:verify_local_matching_service.db
+
+# Set this to true to run the inbuilt database migrations and add test data
+useManagedDatabase: ${USE_MANAGED_DATABASE:-false}

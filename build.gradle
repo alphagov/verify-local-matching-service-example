@@ -19,7 +19,8 @@ dependencies {
             "io.dropwizard:dropwizard-core:$dropwizardVersion",
             "com.github.arteam:dropwizard-jdbi3:1.2.1",
             "org.jdbi:jdbi3-sqlobject:3.0.0-rc2",
-            "org.xerial:sqlite-jdbc:3.21.0"
+            "org.xerial:sqlite-jdbc:3.21.0",
+            "org.flywaydb:flyway-core:4.2.0"
     )
 
     testCompile(

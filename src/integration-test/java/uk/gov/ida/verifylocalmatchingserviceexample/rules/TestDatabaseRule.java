@@ -1,6 +1,7 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.rules;
 
 import io.dropwizard.testing.junit.DropwizardAppRule;
+import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.junit.rules.ExternalResource;
@@ -32,12 +33,14 @@ public class TestDatabaseRule extends ExternalResource {
     }
 
     private void setUpDatabase() {
-        handle.execute("create table verifiedPid(pid TEXT)");
+        Flyway flyway = new Flyway();
+        flyway.setDataSource(this.appRule.getConfiguration().getDataSourceFactory().getUrl(), this.appRule.getConfiguration().getDataSourceFactory().getUser(), this.appRule.getConfiguration().getDataSourceFactory().getPassword());
+        flyway.migrate();
     }
 
     public void ensurePidExist(String verifiedPid) {
         handle.begin();
-        handle.execute("insert into verifiedPid values('" + verifiedPid + "')");
+        handle.execute("insert into verifiedPid (pid, user) values('" + verifiedPid + "', 1)");
         handle.commit();
     }
 
