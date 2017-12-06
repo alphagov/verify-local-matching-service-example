@@ -17,14 +17,14 @@ public class VerifyLocalMatchingServiceExampleConfiguration extends Configuratio
     private DataSourceFactory database = new DataSourceFactory();
 
     @Valid
-    @JsonProperty("useManagedDatabase")
-    private boolean shouldRunDatabaseMigrations;
+    @JsonProperty("managedDatabase")
+    private DatabaseMigrationSetup databaseMigrationSetup = new DatabaseMigrationSetup(null);
 
     public DataSourceFactory getDataSourceFactory() {
         return database;
     }
 
-    public boolean getShouldRunDatabaseMigrations() {
-        return shouldRunDatabaseMigrations;
+    public DatabaseMigrationSetup getDatabaseMigrationSetup() {
+        return databaseMigrationSetup;
     }
 }

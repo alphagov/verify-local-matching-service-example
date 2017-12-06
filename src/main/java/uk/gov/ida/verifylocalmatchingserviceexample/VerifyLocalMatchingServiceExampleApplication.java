@@ -4,10 +4,8 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
-import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
@@ -32,8 +30,9 @@ public class VerifyLocalMatchingServiceExampleApplication extends Application<Ve
 
     @Override
     public void run(VerifyLocalMatchingServiceExampleConfiguration configuration, Environment environment) throws Exception {
-        if (configuration.getShouldRunDatabaseMigrations()) {
-            factory.getDatabaseMigrationRunner().runDatabaseMigrations(configuration.getDataSourceFactory());
+        if (configuration.getDatabaseMigrationSetup().shouldRunDatabaseMigrations()) {
+            factory.getDatabaseMigrationRunner(configuration.getDatabaseMigrationSetup().getDatabaseEngine())
+                .runDatabaseMigrations(configuration.getDataSourceFactory());
         }
 
         Jdbi jdbi = Jdbi.create(configuration.getDataSourceFactory().getUrl());

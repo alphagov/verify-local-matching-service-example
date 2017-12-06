@@ -5,6 +5,7 @@ import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Environment;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.ida.verifylocalmatchingserviceexample.configuration.DatabaseMigrationSetup;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
 import uk.gov.ida.verifylocalmatchingserviceexample.db.migration.DatabaseMigrationRunner;
 
@@ -19,13 +20,14 @@ public class ApplicationStartupTest {
     VerifyLocalMatchingServiceExampleApplication app;
     Environment mockEnvironment;
     DatabaseMigrationRunner mockDatabaseMigrationRunner;
+    DatabaseMigrationSetup databaseMigrationSetup;
 
     @Before
     public void setup() {
         mockDatabaseMigrationRunner = mock(DatabaseMigrationRunner.class);
 
         VerifyLocalMatchingServiceExampleFactory mockFactory = mock(VerifyLocalMatchingServiceExampleFactory.class);
-        when(mockFactory.getDatabaseMigrationRunner()).thenReturn(mockDatabaseMigrationRunner);
+        when(mockFactory.getDatabaseMigrationRunner(any())).thenReturn(mockDatabaseMigrationRunner);
 
         app = new VerifyLocalMatchingServiceExampleApplication(mockFactory);
 
@@ -35,13 +37,16 @@ public class ApplicationStartupTest {
         mockEnvironment = mock(Environment.class);
         when(mockEnvironment.jersey()).thenReturn(mock(JerseyEnvironment.class));
 
+        databaseMigrationSetup = mock(DatabaseMigrationSetup.class);
+
         configuration = mock(VerifyLocalMatchingServiceExampleConfiguration.class);
         when(configuration.getDataSourceFactory()).thenReturn(mockDataSourceFactory);
+        when(configuration.getDatabaseMigrationSetup()).thenReturn(databaseMigrationSetup);
     }
 
     @Test
     public void shouldRunDatabaseMigrationsWhenConfiguredTo() throws Exception {
-        when(configuration.getShouldRunDatabaseMigrations()).thenReturn(true);
+        when(databaseMigrationSetup.shouldRunDatabaseMigrations()).thenReturn(true);
 
         app.run(configuration, mockEnvironment);
 
@@ -50,7 +55,7 @@ public class ApplicationStartupTest {
 
     @Test
     public void shouldNotRunDatabaseMigrationsWhenNotConfiguredTo() throws Exception {
-        when(configuration.getShouldRunDatabaseMigrations()).thenReturn(false);
+        when(databaseMigrationSetup.shouldRunDatabaseMigrations()).thenReturn(false);
 
         app.run(configuration, mockEnvironment);
 
