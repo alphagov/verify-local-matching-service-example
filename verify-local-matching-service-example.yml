@@ -24,3 +24,9 @@ logging:
 database:
   driverClass: org.sqlite.JDBC
   url: jdbc:sqlite:verify_local_matching_service.db
+
+# Specify a database engine in this block to run the inbuilt database migrations
+# to create a compatible database structure and add test data
+# Supported engines for the migrations are postgresql and sqlite.
+managedDatabase:
+  databaseEngine: ${DATABASE_ENGINE:-}

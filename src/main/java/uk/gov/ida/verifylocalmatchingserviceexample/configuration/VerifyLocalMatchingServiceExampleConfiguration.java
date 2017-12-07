@@ -16,7 +16,15 @@ public class VerifyLocalMatchingServiceExampleConfiguration extends Configuratio
     @JsonProperty("database")
     private DataSourceFactory database = new DataSourceFactory();
 
+    @Valid
+    @JsonProperty("managedDatabase")
+    private DatabaseMigrationSetup databaseMigrationSetup = new DatabaseMigrationSetup(null);
+
     public DataSourceFactory getDataSourceFactory() {
         return database;
+    }
+
+    public DatabaseMigrationSetup getDatabaseMigrationSetup() {
+        return databaseMigrationSetup;
     }
 }

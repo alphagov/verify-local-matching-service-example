@@ -1,10 +1,14 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.rules;
 
 import io.dropwizard.testing.junit.DropwizardAppRule;
+import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.junit.rules.ExternalResource;
+import uk.gov.ida.verifylocalmatchingserviceexample.configuration.DatabaseEngine;
+import uk.gov.ida.verifylocalmatchingserviceexample.configuration.DatabaseMigrationSetup;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
+import uk.gov.ida.verifylocalmatchingserviceexample.db.migration.DatabaseMigrationRunner;
 
 public class TestDatabaseRule extends ExternalResource {
     private Handle handle;
@@ -32,12 +36,16 @@ public class TestDatabaseRule extends ExternalResource {
     }
 
     private void setUpDatabase() {
-        handle.execute("create table verifiedPid(pid TEXT)");
+        Flyway flyway = new Flyway();
+        flyway.setDataSource(this.appRule.getConfiguration().getDataSourceFactory().getUrl(), this.appRule.getConfiguration().getDataSourceFactory().getUser(), this.appRule.getConfiguration().getDataSourceFactory().getPassword());
+        flyway.setLocations("classpath:db.migration.common", this.appRule.getConfiguration().getDatabaseMigrationSetup().getDatabaseEngine().getEngineSpecificMigrationsLocation());
+        flyway.clean();
+        flyway.migrate();
     }
 
     public void ensurePidExist(String verifiedPid) {
         handle.begin();
-        handle.execute("insert into verifiedPid values('" + verifiedPid + "')");
+        handle.execute("insert into verifiedPid (pid, person) values('" + verifiedPid + "', (select person_id from person limit 1))");
         handle.commit();
     }
 
