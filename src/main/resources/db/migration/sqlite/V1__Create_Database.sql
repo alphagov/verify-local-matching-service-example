@@ -1,5 +1,5 @@
 CREATE TABLE address (
-    address_id INTEGER IDENTITY PRIMARY KEY,
+    address_id INTEGER PRIMARY KEY AUTOINCREMENT,
     lines VARCHAR,
     city VARCHAR,
     country VARCHAR,
@@ -8,7 +8,7 @@ CREATE TABLE address (
 );
 
 CREATE TABLE person (
-    person_id INTEGER IDENTITY PRIMARY KEY,
+    person_id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name VARCHAR,
     middle_name VARCHAR,
     surname VARCHAR,
