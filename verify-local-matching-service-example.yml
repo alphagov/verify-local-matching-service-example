@@ -22,8 +22,8 @@ logging:
       archivedLogFilenamePattern: logs/verify-local-matching-service-example.log.%d.gz
 
 database:
-  driverClass: org.sqlite.JDBC
-  url: jdbc:sqlite:verify_local_matching_service.db
+  driverClass: ${DB_DRIVER_CLASS:-org.sqlite.JDBC}
+  url: ${DB_URI:-jdbc:sqlite:verify_local_matching_service.db}
 
 # Specify a database engine in this block to run the inbuilt database migrations
 # to create a compatible database structure and add test data

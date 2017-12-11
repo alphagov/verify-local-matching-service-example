@@ -12,8 +12,11 @@ import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMat
 import uk.gov.ida.verifylocalmatchingserviceexample.dao.VerifiedPid;
 import uk.gov.ida.verifylocalmatchingserviceexample.resources.MatchingServiceResource;
 import uk.gov.ida.verifylocalmatchingserviceexample.service.Cycle0MatchingService;
+import uk.gov.ida.verifylocalmatchingserviceexample.utils.ConfigurationFileFinder;
 
-public class VerifyLocalMatchingServiceExampleApplication extends Application<VerifyLocalMatchingServiceExampleConfiguration>{
+import java.util.Arrays;
+
+public class VerifyLocalMatchingServiceExampleApplication extends Application<VerifyLocalMatchingServiceExampleConfiguration> {
     private VerifyLocalMatchingServiceExampleFactory factory;
 
     public VerifyLocalMatchingServiceExampleApplication() {
@@ -25,7 +28,12 @@ public class VerifyLocalMatchingServiceExampleApplication extends Application<Ve
     }
 
     public static void main(String[] args) throws Exception {
-        new VerifyLocalMatchingServiceExampleApplication().run(args);
+        if (Arrays.asList(args).isEmpty()) {
+            String configFilePath = ConfigurationFileFinder.getConfigurationFilePath();
+            new VerifyLocalMatchingServiceExampleApplication().run("server", configFilePath);
+        } else {
+            new VerifyLocalMatchingServiceExampleApplication().run(args);
+        }
     }
 
     @Override
@@ -46,9 +54,9 @@ public class VerifyLocalMatchingServiceExampleApplication extends Application<Ve
     public void initialize(Bootstrap<VerifyLocalMatchingServiceExampleConfiguration> bootstrap) {
         // Enable variable substitution with environment variables
         bootstrap.setConfigurationSourceProvider(
-                new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
-                        new EnvironmentVariableSubstitutor(false)
-                )
+            new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
+                new EnvironmentVariableSubstitutor(false)
+            )
         );
         bootstrap.getObjectMapper().registerModule(new JodaModule());
     }

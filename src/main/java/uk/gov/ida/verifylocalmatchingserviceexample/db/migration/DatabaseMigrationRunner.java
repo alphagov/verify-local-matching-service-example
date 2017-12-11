@@ -15,6 +15,8 @@ public class DatabaseMigrationRunner {
 
     public void runDatabaseMigrations(DataSourceFactory dataSourceFactory) {
         flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
+        flyway.setBaselineVersionAsString("0");
+        flyway.setBaselineOnMigrate(true);
         flyway.setLocations("classpath:db.migration.common", databaseEngine.getEngineSpecificMigrationsLocation());
         flyway.migrate();
     }
