@@ -7,11 +7,12 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.mapper.reflect.ConstructorMapper;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
-import uk.gov.ida.verifylocalmatchingserviceexample.dao.VerifiedPid;
+import uk.gov.ida.verifylocalmatchingserviceexample.model.Person;
 import uk.gov.ida.verifylocalmatchingserviceexample.resources.MatchingServiceResource;
-import uk.gov.ida.verifylocalmatchingserviceexample.service.Cycle0MatchingService;
+import uk.gov.ida.verifylocalmatchingserviceexample.service.MatchingService;
 import uk.gov.ida.verifylocalmatchingserviceexample.utils.ConfigurationFileFinder;
 
 import java.util.Arrays;
@@ -43,11 +44,8 @@ public class VerifyLocalMatchingServiceExampleApplication extends Application<Ve
                 .runDatabaseMigrations(configuration.getDatabaseConfiguration());
         }
 
-        Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
-        jdbi.installPlugin(new SqlObjectPlugin());
-        VerifiedPid verifiedPid = jdbi.onDemand(VerifiedPid.class);
-        Cycle0MatchingService cycle0MatchingService = new Cycle0MatchingService(verifiedPid);
-        environment.jersey().register(new MatchingServiceResource(cycle0MatchingService));
+        MatchingService matchingService = factory.getMatchingService(configuration.getDatabaseConfiguration().getUrl());
+        environment.jersey().register(new MatchingServiceResource(matchingService));
     }
 
     @Override

@@ -5,13 +5,14 @@ import io.dropwizard.jersey.jackson.JsonProcessingExceptionMapper;
 import io.dropwizard.jersey.validation.JerseyViolationExceptionMapper;
 import io.dropwizard.jersey.validation.ValidationErrorMessage;
 import io.dropwizard.testing.junit.ResourceTestRule;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
-import uk.gov.ida.verifylocalmatchingserviceexample.service.Cycle0MatchingService;
+import uk.gov.ida.verifylocalmatchingserviceexample.service.MatchingService;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -21,48 +22,53 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingServiceRequestDtoBuilder.aMatchingServiceRequestDtoBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MatchingServiceResourceTest {
 
-    private static Cycle0MatchingService cycle0MatchingService = mock(Cycle0MatchingService.class);
+    private static MatchingService matchingService = mock(MatchingService.class);
 
     @ClassRule
     public static final ResourceTestRule resources = ResourceTestRule.builder()
             .addProvider(JerseyViolationExceptionMapper.class)
             .addProvider(JsonProcessingExceptionMapper.class)
-            .addResource(new MatchingServiceResource(cycle0MatchingService))
+            .addResource(new MatchingServiceResource(matchingService))
             .build();
+
+    @Before
+    public void setUp() {
+        reset(matchingService);
+    }
 
     @Test
     public void shouldReturnOKWhenThereIsNoConstraintViolation() {
         MatchingServiceRequestDto matchingServiceRequest = aMatchingServiceRequestDtoBuilder().build();
 
-        Response response = postToMatchingService(matchingServiceRequest);
+        Response response = postToMatchingServiceResource(matchingServiceRequest);
 
         assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
     }
 
     @Test
-    public void shouldReturnMatchWhenRequestPidExistInDatabase() {
+    public void shouldReturnMatchWhenMatchingUserExists() {
         MatchingServiceRequestDto matchingServiceRequest = aMatchingServiceRequestDtoBuilder().build();
-        when(cycle0MatchingService.checkForPid(matchingServiceRequest.getHashedPid())).thenReturn(MatchStatusResponseDto.MATCH);
+        when(matchingService.findMatchingUser(any(MatchingServiceRequestDto.class))).thenReturn(MatchStatusResponseDto.MATCH);
 
-        Response response = postToMatchingService(matchingServiceRequest);
+        Response response = postToMatchingServiceResource(matchingServiceRequest);
 
         MatchStatusResponseDto matchStatusResponseDto = response.readEntity(MatchStatusResponseDto.class);
         assertEquals(matchStatusResponseDto.getResult(), MatchStatusResponseDto.MATCH.getResult());
     }
 
     @Test
-    public void shouldReturnNoMatchWhenRequestPidDoesNotExistInDatabase() {
+    public void shouldReturnNoMatchWhenThereIsNoMatchingUser() {
         MatchingServiceRequestDto matchingServiceRequest = aMatchingServiceRequestDtoBuilder().build();
-        when(cycle0MatchingService.checkForPid(matchingServiceRequest.getHashedPid())).thenReturn(MatchStatusResponseDto.NO_MATCH);
+        when(matchingService.findMatchingUser(any(MatchingServiceRequestDto.class))).thenReturn(MatchStatusResponseDto.NO_MATCH);
 
-        Response response = postToMatchingService(matchingServiceRequest);
+        Response response = postToMatchingServiceResource(matchingServiceRequest);
 
         MatchStatusResponseDto matchStatusResponseDto = response.readEntity(MatchStatusResponseDto.class);
         assertEquals(matchStatusResponseDto.getResult(), MatchStatusResponseDto.NO_MATCH.getResult());
@@ -74,7 +80,7 @@ public class MatchingServiceResourceTest {
                 .withMatchingAttributesDto(null)
                 .build();
 
-        Response response = postToMatchingService(matchingServiceRequest);
+        Response response = postToMatchingServiceResource(matchingServiceRequest);
 
         assertThat(response.getStatus()).isEqualTo(422);
 
@@ -108,7 +114,7 @@ public class MatchingServiceResourceTest {
         assertThat(actualError.getMessage()).isEqualTo("Unable to process JSON");
     }
 
-    private Response postToMatchingService(MatchingServiceRequestDto matchingServiceRequest) {
+    private Response postToMatchingServiceResource(MatchingServiceRequestDto matchingServiceRequest) {
         return resources.target("/match-user")
                 .request()
                 .post(Entity.entity(matchingServiceRequest, MediaType.APPLICATION_JSON_TYPE));

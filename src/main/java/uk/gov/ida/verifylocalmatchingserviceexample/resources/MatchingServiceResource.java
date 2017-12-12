@@ -2,7 +2,7 @@ package uk.gov.ida.verifylocalmatchingserviceexample.resources;
 
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
-import uk.gov.ida.verifylocalmatchingserviceexample.service.Cycle0MatchingService;
+import uk.gov.ida.verifylocalmatchingserviceexample.service.MatchingService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -17,15 +17,16 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MatchingServiceResource {
-    private Cycle0MatchingService cycle0MatchingService;
+    private MatchingService matchingService;
 
-    public MatchingServiceResource(Cycle0MatchingService cycle0MatchingService) {
-        this.cycle0MatchingService = cycle0MatchingService;
+    public MatchingServiceResource(MatchingService matchingService) {
+        this.matchingService = matchingService;
     }
 
     @POST
     public Response findMatchingUser(@NotNull @Valid MatchingServiceRequestDto matchingServiceRequest) {
-        MatchStatusResponseDto matchStatusResponse = cycle0MatchingService.checkForPid(matchingServiceRequest.getHashedPid());
+        MatchStatusResponseDto matchStatusResponse = matchingService.findMatchingUser(matchingServiceRequest);
+        System.out.println(matchStatusResponse);
         return Response.ok(matchStatusResponse)
                 .build();
     }

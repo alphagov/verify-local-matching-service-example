@@ -7,16 +7,18 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
+import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributesValueDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.rules.TestDatabaseRule;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static org.junit.Assert.assertEquals;
+import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttributesDtoBuilder.aMatchingAttributesDtoBuilder;
+import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttributesValueDtoBuilder.aMatchingAttributesValueDtoBuilder;
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingServiceRequestDtoBuilder.aMatchingServiceRequestDtoBuilder;
 
 public class MatchingServiceResourceTest {
@@ -29,7 +31,7 @@ public class MatchingServiceResourceTest {
     public static RuleChain chain = RuleChain.outerRule(APP_RULE).around(testDatabaseRule);
 
     @Test
-    public void shouldReturnMatchWhenVerifiedPidIsFoundInCycle0Scenario() throws IOException {
+    public void shouldReturnMatchWhenVerifiedPidIsFoundInCycle0Scenario() throws JsonProcessingException {
         String verifiedPid = "some random string";
         testDatabaseRule.ensurePidExist(verifiedPid);
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
@@ -46,7 +48,7 @@ public class MatchingServiceResourceTest {
     }
 
     @Test
-    public void shouldReturnNoMatchWhenPidNotFoundInCycle0Scenario() throws IOException {
+    public void shouldReturnNoMatchWhenUserIsNotFoundInCycle1Scenario() throws JsonProcessingException {
         String verifiedPid = "some random string";
         testDatabaseRule.ensurePidDoesNotExist(verifiedPid);
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
@@ -60,6 +62,28 @@ public class MatchingServiceResourceTest {
 
         assertEquals(200, response.getStatus());
         assertEquals(MatchStatusResponseDto.NO_MATCH, response.readEntity(MatchStatusResponseDto.class));
+    }
+
+    @Test
+    public void shouldReturnMatchWhenUserIsFoundInCycle1Scenario() throws JsonProcessingException {
+        MatchingAttributesValueDto verifiedSurname = aMatchingAttributesValueDtoBuilder()
+                .withVerified(true)
+                .withValue("test surname")
+                .build();
+        MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
+                .withHashedPid("some random string")
+                .withMatchingAttributesDto(aMatchingAttributesDtoBuilder().withSurname(verifiedSurname).build())
+                .build();
+        testDatabaseRule.ensurePidDoesNotExist("some random string");
+        testDatabaseRule.ensureUserWithSurnameExist("test surname");
+
+        Response response = APP_RULE.client()
+                .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
+                .request()
+                .post(Entity.entity(getRequestString(matchingServiceRequestDto), MediaType.APPLICATION_JSON_TYPE));
+
+        assertEquals(200, response.getStatus());
+        assertEquals(MatchStatusResponseDto.MATCH, response.readEntity(MatchStatusResponseDto.class));
     }
 
     private String getRequestString(MatchingServiceRequestDto matchingServiceRequestDto) throws JsonProcessingException {

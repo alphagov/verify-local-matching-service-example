@@ -55,6 +55,11 @@ public class MatchingAttributesDtoBuilder {
         return this;
     }
 
+    public MatchingAttributesDtoBuilder withSurname(MatchingAttributesValueDto<String> surname) {
+        this.surnames = new LinkedList<MatchingAttributesValueDto<String>>() {{ add(surname); }};
+        return this;
+    }
+
     public MatchingAttributesDtoBuilder withGender(MatchingAttributesValueDto<GenderDto> gender) {
         this.gender = gender;
         return this;

@@ -55,4 +55,9 @@ public class TestDatabaseRule extends ExternalResource {
         handle.commit();
     }
 
+    public void ensureUserWithSurnameExist(String surname) {
+        handle.begin();
+        handle.execute("insert into person (surname) values ('" + surname + "')");
+        handle.commit();
+    }
 }
