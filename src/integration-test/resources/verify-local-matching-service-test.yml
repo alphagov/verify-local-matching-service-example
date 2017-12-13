@@ -26,4 +26,4 @@ database:
   url: jdbc:h2:mem:test
 
 managedDatabase:
-  databaseEngine: sqlite
+  databaseEngine: postgresql
