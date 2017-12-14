@@ -5,7 +5,7 @@ apply plugin: 'application'
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+    maven { url 'https://artifactory.ida.digital.cabinet-office.gov.uk/artifactory/whitelisted-repos' }
 }
 
 project.ext {
@@ -17,7 +17,7 @@ project.ext {
 dependencies {
     compile(
             "io.dropwizard:dropwizard-core:$dropwizardVersion",
-            "io.dropwizard:dropwizard-jdbi:1.2.2",
+            "org.jdbi:jdbi3-core:3.0.0",
             "org.jdbi:jdbi3-sqlobject:3.0.0-rc2",
             "org.xerial:sqlite-jdbc:3.21.0",
             "org.postgresql:postgresql:42.1.4",

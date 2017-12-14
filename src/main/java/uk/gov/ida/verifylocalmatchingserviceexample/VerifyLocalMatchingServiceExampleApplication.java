@@ -40,10 +40,10 @@ public class VerifyLocalMatchingServiceExampleApplication extends Application<Ve
     public void run(VerifyLocalMatchingServiceExampleConfiguration configuration, Environment environment) throws Exception {
         if (configuration.getDatabaseMigrationSetup().shouldRunDatabaseMigrations()) {
             factory.getDatabaseMigrationRunner(configuration.getDatabaseMigrationSetup().getDatabaseEngine())
-                .runDatabaseMigrations(configuration.getDataSourceFactory());
+                .runDatabaseMigrations(configuration.getDatabaseConfiguration());
         }
 
-        Jdbi jdbi = Jdbi.create(configuration.getDataSourceFactory().getUrl());
+        Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
         jdbi.installPlugin(new SqlObjectPlugin());
         VerifiedPid verifiedPid = jdbi.onDemand(VerifiedPid.class);
         Cycle0MatchingService cycle0MatchingService = new Cycle0MatchingService(verifiedPid);

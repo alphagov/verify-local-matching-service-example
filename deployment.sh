@@ -42,7 +42,7 @@ cfBindWithDatabase() {
     cf bind-service verify-local-matching-service-example verify-local-matching-service-example-db
 }
 
-./gradlew clean test distZip
+./gradlew clean test intTest distZip
 
 cfLogin
 cfBindWithDatabase

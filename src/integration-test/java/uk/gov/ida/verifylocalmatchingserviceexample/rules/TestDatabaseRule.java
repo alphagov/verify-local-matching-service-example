@@ -5,10 +5,7 @@ import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.junit.rules.ExternalResource;
-import uk.gov.ida.verifylocalmatchingserviceexample.configuration.DatabaseEngine;
-import uk.gov.ida.verifylocalmatchingserviceexample.configuration.DatabaseMigrationSetup;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
-import uk.gov.ida.verifylocalmatchingserviceexample.db.migration.DatabaseMigrationRunner;
 
 public class TestDatabaseRule extends ExternalResource {
     private Handle handle;
@@ -24,7 +21,7 @@ public class TestDatabaseRule extends ExternalResource {
 
     @Override
     protected void before() throws Throwable {
-        handle = Jdbi.create(this.appRule.getConfiguration().getDataSourceFactory().getUrl()).open();
+        handle = Jdbi.create(this.appRule.getConfiguration().getDatabaseConfiguration().getUrl()).open();
         handle.begin();
         setUpDatabase();
         handle.commit();
@@ -37,9 +34,9 @@ public class TestDatabaseRule extends ExternalResource {
 
     private void setUpDatabase() {
         Flyway flyway = new Flyway();
-        flyway.setDataSource(this.appRule.getConfiguration().getDataSourceFactory().getUrl(),
-                this.appRule.getConfiguration().getDataSourceFactory().getUser(),
-                this.appRule.getConfiguration().getDataSourceFactory().getPassword());
+        flyway.setDataSource(this.appRule.getConfiguration().getDatabaseConfiguration().getUrl(),
+                this.appRule.getConfiguration().getDatabaseConfiguration().getUserName(),
+                this.appRule.getConfiguration().getDatabaseConfiguration().getPassword());
         flyway.setLocations("classpath:db.migration.common",
                 this.appRule.getConfiguration().getDatabaseMigrationSetup().getDatabaseEngine().getEngineSpecificMigrationsLocation());
         flyway.clean();

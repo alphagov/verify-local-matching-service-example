@@ -1,19 +1,16 @@
 package uk.gov.ida.verifylocalmatchingserviceexample;
 
-import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Environment;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.ida.verifylocalmatchingserviceexample.configuration.DatabaseConfiguration;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.DatabaseMigrationSetup;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
 import uk.gov.ida.verifylocalmatchingserviceexample.db.migration.DatabaseMigrationRunner;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ApplicationStartupTest {
     VerifyLocalMatchingServiceExampleConfiguration configuration;
@@ -31,8 +28,8 @@ public class ApplicationStartupTest {
 
         app = new VerifyLocalMatchingServiceExampleApplication(mockFactory);
 
-        DataSourceFactory mockDataSourceFactory = mock(DataSourceFactory.class);
-        when(mockDataSourceFactory.getUrl()).thenReturn("http://example.com");
+        DatabaseConfiguration mockDatabaseConfiguration = mock(DatabaseConfiguration.class);
+        when(mockDatabaseConfiguration.getUrl()).thenReturn("http://example.com");
 
         mockEnvironment = mock(Environment.class);
         when(mockEnvironment.jersey()).thenReturn(mock(JerseyEnvironment.class));
@@ -40,7 +37,7 @@ public class ApplicationStartupTest {
         databaseMigrationSetup = mock(DatabaseMigrationSetup.class);
 
         configuration = mock(VerifyLocalMatchingServiceExampleConfiguration.class);
-        when(configuration.getDataSourceFactory()).thenReturn(mockDataSourceFactory);
+        when(configuration.getDatabaseConfiguration()).thenReturn(mockDatabaseConfiguration);
         when(configuration.getDatabaseMigrationSetup()).thenReturn(databaseMigrationSetup);
     }
 

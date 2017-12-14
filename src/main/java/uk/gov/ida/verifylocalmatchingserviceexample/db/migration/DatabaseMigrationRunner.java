@@ -1,7 +1,7 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.db.migration;
 
-import io.dropwizard.db.DataSourceFactory;
 import org.flywaydb.core.Flyway;
+import uk.gov.ida.verifylocalmatchingserviceexample.configuration.DatabaseConfiguration;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.DatabaseEngine;
 
 public class DatabaseMigrationRunner {
@@ -13,8 +13,8 @@ public class DatabaseMigrationRunner {
         this.databaseEngine = databaseEngine;
     }
 
-    public void runDatabaseMigrations(DataSourceFactory dataSourceFactory) {
-        flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
+    public void runDatabaseMigrations(DatabaseConfiguration databaseConfiguration) {
+        flyway.setDataSource(databaseConfiguration.getUrl(), databaseConfiguration.getUserName(), databaseConfiguration.getPassword());
         flyway.setBaselineVersionAsString("0");
         flyway.setBaselineOnMigrate(true);
         flyway.setLocations("classpath:db.migration.common", databaseEngine.getEngineSpecificMigrationsLocation());
