@@ -2,13 +2,11 @@ package uk.gov.ida.verifylocalmatchingserviceexample;
 
 import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.DatabaseEngine;
 import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.PersonDAO;
 import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.VerifiedPidDAO;
 import uk.gov.ida.verifylocalmatchingserviceexample.db.migration.DatabaseMigrationRunner;
-import uk.gov.ida.verifylocalmatchingserviceexample.model.Person;
 import uk.gov.ida.verifylocalmatchingserviceexample.service.Cycle0MatchingService;
 import uk.gov.ida.verifylocalmatchingserviceexample.service.Cycle1MatchingService;
 import uk.gov.ida.verifylocalmatchingserviceexample.service.MatchingService;

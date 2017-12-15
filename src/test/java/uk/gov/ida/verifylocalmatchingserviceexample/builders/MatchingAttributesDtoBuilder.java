@@ -1,11 +1,11 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.builders;
 
-import org.joda.time.LocalDate;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.AddressDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.GenderDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributesDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributesValueDto;
 
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 

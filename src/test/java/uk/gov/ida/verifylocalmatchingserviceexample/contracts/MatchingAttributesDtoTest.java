@@ -1,6 +1,5 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.contracts;
 
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttributesValueDtoBuilder;
@@ -9,6 +8,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -33,7 +33,6 @@ public class MatchingAttributesDtoTest {
 
         Set<ConstraintViolation<MatchingAttributesDto>> constraintViolations = validator.validate(matchingAttributesDto);
 
-        System.out.println(constraintViolations);
         assertTrue(constraintViolations.isEmpty());
     }
 
@@ -45,7 +44,6 @@ public class MatchingAttributesDtoTest {
 
         Set<ConstraintViolation<MatchingAttributesDto>> constraintViolations = validator.validate(matchingAttributesDto);
 
-        System.out.println(constraintViolations);
         assertEquals(1, constraintViolations.size());
         ConstraintViolation<MatchingAttributesDto> violation = constraintViolations.iterator().next();
         assertEquals("may not be empty", violation.getMessage());
@@ -99,8 +97,7 @@ public class MatchingAttributesDtoTest {
     @Test
     public void shouldReturnConstraintViolationWhenDateOfBirthIsMissingRequiredFields() {
         MatchingAttributesDto matchingAttributesDto = aMatchingAttributesDtoBuilder()
-                .withDateOfBirth(MatchingAttributesValueDtoBuilder
-                        .<LocalDate>aMatchingAttributesValueDtoBuilder().build())
+                .withDateOfBirth(MatchingAttributesValueDtoBuilder.<LocalDate>aMatchingAttributesValueDtoBuilder().build())
                 .build();
 
         Set<ConstraintViolation<MatchingAttributesDto>> constraintViolations = validator.validate(matchingAttributesDto);

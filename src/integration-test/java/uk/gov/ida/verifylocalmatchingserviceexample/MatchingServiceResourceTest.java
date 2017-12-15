@@ -14,6 +14,7 @@ import uk.gov.ida.verifylocalmatchingserviceexample.rules.TestDatabaseRule;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.LocalDate;
 
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static org.junit.Assert.assertEquals;
@@ -25,6 +26,7 @@ public class MatchingServiceResourceTest {
     private static final DropwizardAppRule<VerifyLocalMatchingServiceExampleConfiguration> APP_RULE =
             new DropwizardAppRule<>(VerifyLocalMatchingServiceExampleApplication.class,
                     resourceFilePath("verify-local-matching-service-test.yml"));
+
     private static TestDatabaseRule testDatabaseRule = new TestDatabaseRule(APP_RULE);
 
     @ClassRule
@@ -51,8 +53,21 @@ public class MatchingServiceResourceTest {
     public void shouldReturnNoMatchWhenUserIsNotFoundInCycle1Scenario() throws JsonProcessingException {
         String verifiedPid = "some random string";
         testDatabaseRule.ensurePidDoesNotExist(verifiedPid);
+        LocalDate dateOfBirth = LocalDate.of(1884, 4, 6);
+        testDatabaseRule.ensureUserDoesNotExist("test surname", dateOfBirth);
+        MatchingAttributesValueDto verifiedSurname = aMatchingAttributesValueDtoBuilder()
+                .withVerified(true)
+                .withValue("test surname")
+                .build();
+        MatchingAttributesValueDto verifiedDateOfBirth = aMatchingAttributesValueDtoBuilder()
+                .withVerified(true)
+                .withValue(dateOfBirth)
+                .build();
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
                 .withHashedPid(verifiedPid)
+                .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
+                        .withDateOfBirth(verifiedDateOfBirth)
+                        .withSurname(verifiedSurname).build())
                 .build();
 
         Response response = APP_RULE.client()
@@ -70,12 +85,19 @@ public class MatchingServiceResourceTest {
                 .withVerified(true)
                 .withValue("test surname")
                 .build();
+        LocalDate dateOfBirth = LocalDate.of(1884, 4, 6);
+        MatchingAttributesValueDto verifiedDateOfBirth = aMatchingAttributesValueDtoBuilder()
+                .withVerified(true)
+                .withValue(dateOfBirth)
+                .build();
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
                 .withHashedPid("some random string")
-                .withMatchingAttributesDto(aMatchingAttributesDtoBuilder().withSurname(verifiedSurname).build())
+                .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
+                        .withDateOfBirth(verifiedDateOfBirth)
+                        .withSurname(verifiedSurname).build())
                 .build();
         testDatabaseRule.ensurePidDoesNotExist("some random string");
-        testDatabaseRule.ensureUserWithSurnameExist("test surname");
+        testDatabaseRule.ensureUserExist("test surname", dateOfBirth);
 
         Response response = APP_RULE.client()
                 .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))

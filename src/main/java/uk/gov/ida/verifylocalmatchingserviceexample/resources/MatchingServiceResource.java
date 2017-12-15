@@ -26,7 +26,6 @@ public class MatchingServiceResource {
     @POST
     public Response findMatchingUser(@NotNull @Valid MatchingServiceRequestDto matchingServiceRequest) {
         MatchStatusResponseDto matchStatusResponse = matchingService.findMatchingUser(matchingServiceRequest);
-        System.out.println(matchStatusResponse);
         return Response.ok(matchStatusResponse)
                 .build();
     }
