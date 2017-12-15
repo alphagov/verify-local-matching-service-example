@@ -18,16 +18,8 @@ public class DatabaseConfiguration {
     @JsonProperty("password")
     private String password;
 
-    @NotNull
-    @JsonProperty("driverClass")
-    private String driverClass;
-
     public String getUrl() {
         return url;
-    }
-
-    public String getDriverClass() {
-        return driverClass;
     }
 
     public String getUserName() {

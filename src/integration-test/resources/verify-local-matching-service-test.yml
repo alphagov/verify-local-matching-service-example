@@ -22,7 +22,6 @@ logging:
       archivedLogFilenamePattern: logs/verify-local-matching-service-example.log.%d.gz
 
 database:
-  driverClass: org.h2.Driver
   url: jdbc:h2:mem:test
 
 managedDatabase:
