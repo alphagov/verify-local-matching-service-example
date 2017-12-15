@@ -1,0 +1,2 @@
+INSERT INTO verifiedPid (pid, person)
+    VALUES ('0000000000000000000000000000000000000000000000000000000000000000', (SELECT person_id FROM person WHERE first_name = 'Joe' AND surname = 'Bloggs'));
