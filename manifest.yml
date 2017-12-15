@@ -4,4 +4,3 @@ applications:
     buildpack: java_buildpack
     env:
       DATABASE_ENGINE: postgresql
-      DB_DRIVER_CLASS: org.postgresql.Driver
