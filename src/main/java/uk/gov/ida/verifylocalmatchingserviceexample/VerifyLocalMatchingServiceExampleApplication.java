@@ -37,10 +37,7 @@ public class VerifyLocalMatchingServiceExampleApplication extends Application<Ve
 
     @Override
     public void run(VerifyLocalMatchingServiceExampleConfiguration configuration, Environment environment) throws Exception {
-        if (configuration.getDatabaseMigrationSetup().shouldRunDatabaseMigrations()) {
-            factory.getDatabaseMigrationRunner(configuration.getDatabaseMigrationSetup().getDatabaseEngine())
-                .runDatabaseMigrations(configuration.getDatabaseConfiguration());
-        }
+        factory.getDatabaseMigrationRunner().runDatabaseMigrations(configuration.getDatabaseConfiguration());
 
         Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
         jdbi.installPlugin(new SqlObjectPlugin());
@@ -54,9 +51,9 @@ public class VerifyLocalMatchingServiceExampleApplication extends Application<Ve
     public void initialize(Bootstrap<VerifyLocalMatchingServiceExampleConfiguration> bootstrap) {
         // Enable variable substitution with environment variables
         bootstrap.setConfigurationSourceProvider(
-            new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
-                new EnvironmentVariableSubstitutor(false)
-            )
+                new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
+                        new EnvironmentVariableSubstitutor(false)
+                )
         );
         bootstrap.getObjectMapper().registerModule(new JodaModule());
     }

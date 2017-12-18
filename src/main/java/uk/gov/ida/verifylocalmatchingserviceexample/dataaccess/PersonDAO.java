@@ -5,8 +5,8 @@ import uk.gov.ida.verifylocalmatchingserviceexample.mappers.PersonMapper;
 import uk.gov.ida.verifylocalmatchingserviceexample.model.Person;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PersonDAO {
     private Jdbi jdbi;
@@ -17,11 +17,11 @@ public class PersonDAO {
 
     public List<Person> getMatchingUsers(List<String> surnames, LocalDate dateOfBirth) {
         return jdbi.withHandle(handle ->
-            handle.createQuery("select surname, date_of_birth from person where surname in (<surnames>) and date_of_birth = :dateOfBirth")
-                .bindList("surnames", surnames)
-                .bind("dateOfBirth", dateOfBirth.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                .map(new PersonMapper())
-                .list()
+                handle.createQuery("select surname, date_of_birth from person where LOWER(surname) in (<surnames>) and date_of_birth = :dateOfBirth")
+                        .bindList("surnames", toLowerCase(surnames))
+                        .bind("dateOfBirth", dateOfBirth)
+                        .map(new PersonMapper())
+                        .list()
         );
     }
 
@@ -32,4 +32,11 @@ public class PersonDAO {
             .isPresent()
         );
     }
+
+    private List<String> toLowerCase(List<String> surnames) {
+        return surnames.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+    }
+
 }

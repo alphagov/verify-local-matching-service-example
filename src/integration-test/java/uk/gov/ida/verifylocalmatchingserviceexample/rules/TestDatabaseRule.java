@@ -39,8 +39,7 @@ public class TestDatabaseRule extends ExternalResource {
         flyway.setDataSource(this.appRule.getConfiguration().getDatabaseConfiguration().getUrl(),
                 this.appRule.getConfiguration().getDatabaseConfiguration().getUserName(),
                 this.appRule.getConfiguration().getDatabaseConfiguration().getPassword());
-        flyway.setLocations("classpath:db.migration.common",
-                this.appRule.getConfiguration().getDatabaseMigrationSetup().getDatabaseEngine().getEngineSpecificMigrationsLocation());
+        flyway.setLocations("classpath:db.migration");
         flyway.clean();
         flyway.migrate();
     }

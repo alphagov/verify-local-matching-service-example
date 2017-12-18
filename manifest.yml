@@ -2,5 +2,3 @@ memory: 1024M
 applications:
   - name: verify-local-matching-service-example
     buildpack: java_buildpack
-    env:
-      DATABASE_ENGINE: postgresql

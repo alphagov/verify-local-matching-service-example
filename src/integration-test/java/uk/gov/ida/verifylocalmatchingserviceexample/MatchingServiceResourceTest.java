@@ -50,7 +50,7 @@ public class MatchingServiceResourceTest {
     }
 
     @Test
-    public void shouldReturnNoMatchWhenUserIsNotFoundInCycle1Scenario() throws JsonProcessingException {
+    public void shouldReturnNoMatchWhenUserWithSurnameAndDateOfBirthIsNotFoundInCycle1Scenario() throws JsonProcessingException {
         String verifiedPid = "some random string";
         testDatabaseRule.ensurePidDoesNotExist(verifiedPid);
         LocalDate dateOfBirth = LocalDate.of(1884, 4, 6);
@@ -80,7 +80,7 @@ public class MatchingServiceResourceTest {
     }
 
     @Test
-    public void shouldReturnMatchWhenUserIsFoundInCycle1Scenario() throws JsonProcessingException {
+    public void shouldReturnMatchWhenUserWithSurnameAndDateOfBirthIsFoundInCycle1Scenario() throws JsonProcessingException {
         MatchingAttributesValueDto verifiedSurname = aMatchingAttributesValueDtoBuilder()
                 .withVerified(true)
                 .withValue("test surname")
@@ -98,6 +98,35 @@ public class MatchingServiceResourceTest {
                 .build();
         testDatabaseRule.ensurePidDoesNotExist("some random string");
         testDatabaseRule.ensureUserExist("test surname", dateOfBirth);
+
+        Response response = APP_RULE.client()
+                .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
+                .request()
+                .post(Entity.entity(getRequestString(matchingServiceRequestDto), MediaType.APPLICATION_JSON_TYPE));
+
+        assertEquals(200, response.getStatus());
+        assertEquals(MatchStatusResponseDto.MATCH, response.readEntity(MatchStatusResponseDto.class));
+    }
+
+    @Test
+    public void shouldReturnMatchWhenThereIsCaseInsensitiveSurnameMatchFoundInCycle1Scenario() throws JsonProcessingException {
+        MatchingAttributesValueDto verifiedSurname = aMatchingAttributesValueDtoBuilder()
+                .withVerified(true)
+                .withValue("Test surname")
+                .build();
+        LocalDate dateOfBirth = LocalDate.of(1884, 4, 6);
+        MatchingAttributesValueDto verifiedDateOfBirth = aMatchingAttributesValueDtoBuilder()
+                .withVerified(true)
+                .withValue(dateOfBirth)
+                .build();
+        MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
+                .withHashedPid("some random string")
+                .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
+                        .withDateOfBirth(verifiedDateOfBirth)
+                        .withSurname(verifiedSurname).build())
+                .build();
+        testDatabaseRule.ensurePidDoesNotExist("some random string");
+        testDatabaseRule.ensureUserExist("TeST Surname", dateOfBirth);
 
         Response response = APP_RULE.client()
                 .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
