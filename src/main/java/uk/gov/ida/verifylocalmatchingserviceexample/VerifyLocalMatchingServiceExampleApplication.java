@@ -6,7 +6,10 @@ import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
+import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.PersonDAO;
 import uk.gov.ida.verifylocalmatchingserviceexample.resources.MatchingServiceResource;
 import uk.gov.ida.verifylocalmatchingserviceexample.utils.ConfigurationFileFinder;
 
@@ -39,8 +42,12 @@ public class VerifyLocalMatchingServiceExampleApplication extends Application<Ve
                 .runDatabaseMigrations(configuration.getDatabaseConfiguration());
         }
 
-        MatchingServiceResource matchingServiceResource = factory.getMatchingService(configuration.getDatabaseConfiguration().getUrl());
+        Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
+        jdbi.installPlugin(new SqlObjectPlugin());
+
+        MatchingServiceResource matchingServiceResource = factory.getMatchingService(jdbi);
         environment.jersey().register(matchingServiceResource);
+        environment.healthChecks().register("database", factory.getDatabaseHealthCheck(new PersonDAO(jdbi)));
     }
 
     @Override
