@@ -7,6 +7,8 @@ import org.jdbi.v3.core.Jdbi;
 import org.junit.rules.ExternalResource;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
 
+import java.time.LocalDate;
+
 public class TestDatabaseRule extends ExternalResource {
     private Handle handle;
     private DropwizardAppRule<VerifyLocalMatchingServiceExampleConfiguration> appRule;
@@ -55,4 +57,15 @@ public class TestDatabaseRule extends ExternalResource {
         handle.commit();
     }
 
+    public void ensureUserExist(String surname, LocalDate dateOfBirth) {
+        handle.begin();
+        handle.execute("insert into person (surname, date_of_birth) values ('" + surname + "', '" + dateOfBirth + "')");
+        handle.commit();
+    }
+
+    public void ensureUserDoesNotExist(String surname, LocalDate dateOfBirth) {
+        handle.begin();
+        handle.execute("delete from person where surname = ('" + surname + "') and date_of_birth = ('" + dateOfBirth + "')");
+        handle.commit();
+    }
 }
