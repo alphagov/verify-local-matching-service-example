@@ -22,4 +22,7 @@ logging:
       archivedLogFilenamePattern: logs/verify-local-matching-service-example.log.%d.gz
 
 database:
-  url: ${DB_URI:-jdbc:sqlite:verify_local_matching_service.db}
+# Ensure to run the application you have DB_URI
+# Format for DB_URI: jdbc:postgresql://host-name:port/database-name?user=user-name&password=password
+# example: jdbc:postgresql://localhost:5432/postgres?user=postgres&password=password
+  url: ${DB_URI:-}
