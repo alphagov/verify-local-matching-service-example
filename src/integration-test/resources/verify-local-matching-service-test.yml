@@ -22,4 +22,4 @@ logging:
       archivedLogFilenamePattern: logs/verify-local-matching-service-example.log.%d.gz
 
 database:
-  url: jdbc:h2:mem:test
+  url: jdbc:h2:mem:test;MODE=PostgreSQL
