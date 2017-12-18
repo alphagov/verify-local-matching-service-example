@@ -14,15 +14,7 @@ public class VerifyLocalMatchingServiceExampleConfiguration extends Configuratio
     @JsonProperty("database")
     private DatabaseConfiguration databaseConfiguration;
 
-    @Valid
-    @JsonProperty("managedDatabase")
-    private DatabaseMigrationSetup databaseMigrationSetup = new DatabaseMigrationSetup(null);
-
     public DatabaseConfiguration getDatabaseConfiguration() {
         return databaseConfiguration;
-    }
-
-    public DatabaseMigrationSetup getDatabaseMigrationSetup() {
-        return databaseMigrationSetup;
     }
 }

@@ -23,6 +23,3 @@ logging:
 
 database:
   url: jdbc:h2:mem:test
-
-managedDatabase:
-  databaseEngine: postgresql
