@@ -40,7 +40,6 @@ public class VerifyLocalMatchingServiceExampleApplication extends Application<Ve
         factory.getDatabaseMigrationRunner().runDatabaseMigrations(configuration.getDatabaseConfiguration());
 
         Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
-        jdbi.installPlugin(new SqlObjectPlugin());
 
         MatchingServiceResource matchingServiceResource = factory.getMatchingService(jdbi);
         environment.jersey().register(matchingServiceResource);
