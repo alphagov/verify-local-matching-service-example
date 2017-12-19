@@ -7,7 +7,6 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import uk.gov.ida.verifylocalmatchingserviceexample.configuration.VerifyLocalMatchingServiceExampleConfiguration;
 import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.PersonDAO;
 import uk.gov.ida.verifylocalmatchingserviceexample.resources.MatchingServiceResource;
