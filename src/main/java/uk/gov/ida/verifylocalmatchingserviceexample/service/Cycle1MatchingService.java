@@ -4,6 +4,7 @@ import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusRespons
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributesValueDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.PersonDAO;
+import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.VerifiedPidDAO;
 import uk.gov.ida.verifylocalmatchingserviceexample.model.Person;
 
 import java.time.LocalDate;
@@ -15,9 +16,11 @@ import java.util.stream.Stream;
 public class Cycle1MatchingService {
 
     private PersonDAO personDAO;
+    private VerifiedPidDAO verifiedPidDAO;
 
-    public Cycle1MatchingService(PersonDAO personDAO) {
+    public Cycle1MatchingService(PersonDAO personDAO, VerifiedPidDAO verifiedPidDAO) {
         this.personDAO = personDAO;
+        this.verifiedPidDAO = verifiedPidDAO;
     }
 
     public MatchStatusResponseDto matchUser(MatchingServiceRequestDto matchingServiceRequest) {
@@ -27,7 +30,15 @@ public class Cycle1MatchingService {
                 .filter(s -> !s.isEmpty())
                 .flatMap(surname -> dateOfBirth.map(d -> personDAO.getMatchingUsers(surname, d)));
 
-        return matchingUsers.filter(user -> user.size() == 1).map(user -> MatchStatusResponseDto.MATCH).orElse(MatchStatusResponseDto.NO_MATCH);
+        MatchStatusResponseDto matchStatusResponseDto = matchingUsers
+                .filter(user -> user.size() == 1)
+                .map(user -> MatchStatusResponseDto.MATCH)
+                .orElse(MatchStatusResponseDto.NO_MATCH);
+
+        if (matchStatusResponseDto == MatchStatusResponseDto.MATCH)
+            verifiedPidDAO.save(matchingServiceRequest.getHashedPid(), matchingUsers.get().get(0).getPersonId());
+
+        return matchStatusResponseDto;
     }
 
     private Optional<LocalDate> getVerifiedDateOfBirth(MatchingServiceRequestDto matchingServiceRequest) {

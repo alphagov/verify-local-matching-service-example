@@ -21,12 +21,12 @@ public class VerifyLocalMatchingServiceExampleFactory {
 
     public MatchingServiceResource getMatchingService(Jdbi jdbi) {
         Cycle0MatchingService cycle0MatchingService = new Cycle0MatchingService(new VerifiedPidDAO(jdbi));
-        Cycle1MatchingService cycle1MatchingService = new Cycle1MatchingService(new PersonDAO(jdbi));
+        Cycle1MatchingService cycle1MatchingService = new Cycle1MatchingService(new PersonDAO(jdbi), new VerifiedPidDAO(jdbi));
 
         return new MatchingServiceResource(new MatchingService(cycle0MatchingService, cycle1MatchingService));
     }
 
-    public HealthCheck getDatabaseHealthCheck(PersonDAO personDAO) {
-        return new DatabaseHealthCheck(personDAO);
+    public HealthCheck getDatabaseHealthCheck(Jdbi jdbi) {
+        return new DatabaseHealthCheck(new PersonDAO(jdbi));
     }
 }
