@@ -3,7 +3,6 @@ package uk.gov.ida.verifylocalmatchingserviceexample.service;
 import org.junit.Test;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
-import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.PersonDAO;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;

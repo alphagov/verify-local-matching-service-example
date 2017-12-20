@@ -9,9 +9,10 @@ import uk.gov.ida.verifylocalmatchingserviceexample.model.Person;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
+import static uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto.MATCH;
+import static uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto.NO_MATCH;
 
 public class Cycle1MatchingService {
 
@@ -24,35 +25,27 @@ public class Cycle1MatchingService {
     }
 
     public MatchStatusResponseDto matchUser(MatchingServiceRequestDto matchingServiceRequest) {
-        Optional<List<String>> surnames = getCurrentAndVerifiedSurnames(matchingServiceRequest.getMatchingAttributesDto().getSurnames());
-        Optional<LocalDate> dateOfBirth = getVerifiedDateOfBirth(matchingServiceRequest);
-        Optional<List<Person>> matchingUsers = surnames
-                .filter(s -> !s.isEmpty())
-                .flatMap(surname -> dateOfBirth.map(d -> personDAO.getMatchingUsers(surname, d)));
-
-        MatchStatusResponseDto matchStatusResponseDto = matchingUsers
-                .filter(user -> user.size() == 1)
-                .map(user -> MatchStatusResponseDto.MATCH)
-                .orElse(MatchStatusResponseDto.NO_MATCH);
-
-        if (matchStatusResponseDto == MatchStatusResponseDto.MATCH)
-            verifiedPidDAO.save(matchingServiceRequest.getHashedPid(), matchingUsers.get().get(0).getPersonId());
-
-        return matchStatusResponseDto;
-    }
-
-    private Optional<LocalDate> getVerifiedDateOfBirth(MatchingServiceRequestDto matchingServiceRequest) {
         MatchingAttributesValueDto<LocalDate> dateOfBirth = matchingServiceRequest.getMatchingAttributesDto().getDateOfBirth();
-        return Stream.of(dateOfBirth)
-                .filter(MatchingAttributesValueDto::getVerified)
-                .map(MatchingAttributesValueDto::getValue)
-                .findFirst();
+        List<String> verifiedSurnames = getAllVerifiedSurnames(matchingServiceRequest.getMatchingAttributesDto().getSurnames());
+
+        if (!dateOfBirth.getVerified() || verifiedSurnames.isEmpty()) {
+            return NO_MATCH;
+        }
+
+        List<Person> matchingUsers = personDAO.getMatchingUsers(verifiedSurnames, dateOfBirth.getValue());
+
+        if (matchingUsers.size() == 1){
+            verifiedPidDAO.save(matchingServiceRequest.getHashedPid(), matchingUsers.get(0).getPersonId());
+            return MATCH;
+        }
+
+        return NO_MATCH;
     }
 
-    private Optional<List<String>> getCurrentAndVerifiedSurnames(List<MatchingAttributesValueDto<String>> surnames) {
-        return Optional.ofNullable(surnames.stream()
-                .filter(surname -> surname.getVerified() && surname.getTo() == null)
-                .map(MatchingAttributesValueDto::getValue)
-                .collect(Collectors.toList()));
+    private List<String> getAllVerifiedSurnames(List<MatchingAttributesValueDto<String>> surnames) {
+        return surnames.stream()
+            .filter(MatchingAttributesValueDto::getVerified)
+            .map(MatchingAttributesValueDto::getValue)
+            .collect(toList());
     }
 }

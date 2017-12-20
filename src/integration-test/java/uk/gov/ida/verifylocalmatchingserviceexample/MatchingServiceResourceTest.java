@@ -24,9 +24,11 @@ import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttr
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingServiceRequestDtoBuilder.aMatchingServiceRequestDtoBuilder;
 
 public class MatchingServiceResourceTest {
-    private static final DropwizardAppRule<VerifyLocalMatchingServiceExampleConfiguration> APP_RULE =
-            new DropwizardAppRule<>(VerifyLocalMatchingServiceExampleApplication.class,
-                    resourceFilePath("verify-local-matching-service-test.yml"));
+
+    private static final DropwizardAppRule<VerifyLocalMatchingServiceExampleConfiguration> APP_RULE = new DropwizardAppRule<>(
+        VerifyLocalMatchingServiceExampleApplication.class,
+        resourceFilePath("verify-local-matching-service-test.yml")
+    );
 
     private static TestDatabaseRule testDatabaseRule = new TestDatabaseRule(APP_RULE);
 
@@ -38,13 +40,13 @@ public class MatchingServiceResourceTest {
         String verifiedPid = "some random string";
         testDatabaseRule.ensurePidExist(verifiedPid);
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
-                .withHashedPid(verifiedPid)
-                .build();
+            .withHashedPid(verifiedPid)
+            .build();
 
         Response response = APP_RULE.client()
-                .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
-                .request()
-                .post(Entity.entity(getRequestString(matchingServiceRequestDto), MediaType.APPLICATION_JSON_TYPE));
+            .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
+            .request()
+            .post(Entity.entity(getRequestString(matchingServiceRequestDto), MediaType.APPLICATION_JSON_TYPE));
 
         assertEquals(200, response.getStatus());
         assertEquals(MatchStatusResponseDto.MATCH, response.readEntity(MatchStatusResponseDto.class));
@@ -56,19 +58,25 @@ public class MatchingServiceResourceTest {
         testDatabaseRule.ensurePidDoesNotExist(verifiedPid);
         LocalDate dateOfBirth = LocalDate.of(1884, 4, 6);
         testDatabaseRule.ensureUserDoesNotExist("test surname", dateOfBirth);
-        MatchingAttributesValueDto verifiedSurname = getVerifiedSurname("test surname");
-        MatchingAttributesValueDto verifiedDateOfBirth = getVerifiedDateOfBirth(dateOfBirth);
+        MatchingAttributesValueDto verifiedSurname = aMatchingAttributesValueDtoBuilder()
+            .withVerified(true)
+            .withValue("test surname")
+            .build();
+        MatchingAttributesValueDto verifiedDateOfBirth = aMatchingAttributesValueDtoBuilder()
+            .withVerified(true)
+            .withValue(dateOfBirth)
+            .build();
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
-                .withHashedPid(verifiedPid)
-                .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
-                        .withDateOfBirth(verifiedDateOfBirth)
-                        .withSurname(verifiedSurname).build())
-                .build();
+            .withHashedPid(verifiedPid)
+            .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
+                .withDateOfBirth(verifiedDateOfBirth)
+                .withSurname(verifiedSurname).build())
+            .build();
 
         Response response = APP_RULE.client()
-                .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
-                .request()
-                .post(Entity.entity(getRequestString(matchingServiceRequestDto), MediaType.APPLICATION_JSON_TYPE));
+            .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
+            .request()
+            .post(Entity.entity(getRequestString(matchingServiceRequestDto), MediaType.APPLICATION_JSON_TYPE));
 
         assertEquals(200, response.getStatus());
         assertEquals(MatchStatusResponseDto.NO_MATCH, response.readEntity(MatchStatusResponseDto.class));
@@ -76,23 +84,28 @@ public class MatchingServiceResourceTest {
 
     @Test
     public void shouldReturnMatchWhenUserWithSurnameAndDateOfBirthIsFoundInCycle1Scenario() throws JsonProcessingException {
-        String testSurname = "test surname";
+        MatchingAttributesValueDto verifiedSurname = aMatchingAttributesValueDtoBuilder()
+            .withVerified(true)
+            .withValue("test surname")
+            .build();
         LocalDate dateOfBirth = LocalDate.of(1884, 4, 6);
-
+        MatchingAttributesValueDto verifiedDateOfBirth = aMatchingAttributesValueDtoBuilder()
+            .withVerified(true)
+            .withValue(dateOfBirth)
+            .build();
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
-                .withHashedPid("some random string")
-                .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
-                        .withDateOfBirth(getVerifiedDateOfBirth(dateOfBirth))
-                        .withSurname(getVerifiedSurname(testSurname)).build())
-                .build();
-
+            .withHashedPid("some random string")
+            .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
+                .withDateOfBirth(verifiedDateOfBirth)
+                .withSurname(verifiedSurname).build())
+            .build();
         testDatabaseRule.ensurePidDoesNotExist("some random string");
-        testDatabaseRule.ensureUserExist(testSurname, dateOfBirth);
+        testDatabaseRule.ensureUserExist("test surname", dateOfBirth);
 
         Response response = APP_RULE.client()
-                .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
-                .request()
-                .post(Entity.entity(getRequestString(matchingServiceRequestDto), MediaType.APPLICATION_JSON_TYPE));
+            .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
+            .request()
+            .post(Entity.entity(getRequestString(matchingServiceRequestDto), MediaType.APPLICATION_JSON_TYPE));
 
         assertEquals(200, response.getStatus());
         assertEquals(MatchStatusResponseDto.MATCH, response.readEntity(MatchStatusResponseDto.class));
@@ -100,22 +113,28 @@ public class MatchingServiceResourceTest {
 
     @Test
     public void shouldReturnMatchWhenThereIsCaseInsensitiveSurnameMatchFoundInCycle1Scenario() throws JsonProcessingException {
-        MatchingAttributesValueDto verifiedSurname = getVerifiedSurname("Test surname");
+        MatchingAttributesValueDto verifiedSurname = aMatchingAttributesValueDtoBuilder()
+            .withVerified(true)
+            .withValue("Test surname")
+            .build();
         LocalDate dateOfBirth = LocalDate.of(1884, 4, 6);
-        MatchingAttributesValueDto verifiedDateOfBirth = getVerifiedDateOfBirth(dateOfBirth);
+        MatchingAttributesValueDto verifiedDateOfBirth = aMatchingAttributesValueDtoBuilder()
+            .withVerified(true)
+            .withValue(dateOfBirth)
+            .build();
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
-                .withHashedPid("some random string")
-                .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
-                        .withDateOfBirth(verifiedDateOfBirth)
-                        .withSurname(verifiedSurname).build())
-                .build();
+            .withHashedPid("some random string")
+            .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
+                .withDateOfBirth(verifiedDateOfBirth)
+                .withSurname(verifiedSurname).build())
+            .build();
         testDatabaseRule.ensurePidDoesNotExist("some random string");
         testDatabaseRule.ensureUserExist("TeST Surname", dateOfBirth);
 
         Response response = APP_RULE.client()
-                .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
-                .request()
-                .post(Entity.entity(getRequestString(matchingServiceRequestDto), MediaType.APPLICATION_JSON_TYPE));
+            .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
+            .request()
+            .post(Entity.entity(getRequestString(matchingServiceRequestDto), MediaType.APPLICATION_JSON_TYPE));
 
         assertEquals(200, response.getStatus());
         assertEquals(MatchStatusResponseDto.MATCH, response.readEntity(MatchStatusResponseDto.class));

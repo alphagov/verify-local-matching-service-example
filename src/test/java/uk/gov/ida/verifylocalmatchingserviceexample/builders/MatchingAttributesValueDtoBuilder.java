@@ -4,9 +4,10 @@ import org.joda.time.DateTime;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributesValueDto;
 
 public class MatchingAttributesValueDtoBuilder<T> {
+
     private T value;
-    private DateTime from;
-    private DateTime to;
+    private DateTime from = new DateTime().minusYears(1);
+    private DateTime to = null;
     private Boolean verified = false;
 
     public MatchingAttributesValueDto<T> build() {
