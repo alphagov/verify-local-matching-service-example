@@ -4,7 +4,6 @@ public class Address {
 
     private final String postcode;
 
-
     public Address(String postcode) {
         this.postcode = postcode;
     }

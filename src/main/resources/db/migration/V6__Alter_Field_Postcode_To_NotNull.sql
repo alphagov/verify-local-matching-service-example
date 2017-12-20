@@ -1,0 +1,2 @@
+ALTER TABLE address
+    ALTER COLUMN postcode SET NOT NULL;
