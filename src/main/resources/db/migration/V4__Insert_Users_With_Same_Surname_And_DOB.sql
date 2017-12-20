@@ -4,4 +4,4 @@ INSERT INTO address (lines, city, country, postcode)
 
 INSERT INTO person (first_name, middle_name, surname, address, date_of_birth)
     VALUES ('Zachary', null, 'Humphries', (SELECT address_id FROM address WHERE postcode = 'E1 8DX'), '1970-01-02'),
-           ('Arlin', 'Nomi', 'Humphries', (SELECT address_id FROM address WHERE postcode = 'SN14 0ZZ'), '1970-01-02');
+           ('Arlin', 'Nomi', 'Humphries', (SELECT address_id FROM address WHERE postcode = 'SN14 0ZY'), '1970-01-02');
