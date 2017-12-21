@@ -1,5 +1,6 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.service;
 
+import uk.gov.ida.verifylocalmatchingserviceexample.contracts.AddressDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributesValueDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
@@ -33,8 +34,17 @@ public class Cycle1MatchingService {
         }
 
         List<Person> matchingUsers = personDAO.getMatchingUsers(verifiedSurnames, dateOfBirth.getValue());
+        if (matchingUsers.size() < 1) {
+            return NO_MATCH;
+        }
 
-        if (matchingUsers.size() == 1){
+        List<String> allVerifiedPostCodes = getAllVerifiedPostcodes(matchingServiceRequest.getMatchingAttributesDto().getAddresses());
+        if (allVerifiedPostCodes.size() < 1) {
+            return NO_MATCH;
+        }
+
+        List<Person> matchingUsersWithVerifiedPostCode = getMatchingUsersWithVerifiedPostCode(matchingUsers, allVerifiedPostCodes);
+        if (matchingUsersWithVerifiedPostCode.size() == 1) {
             verifiedPidDAO.save(matchingServiceRequest.getHashedPid(), matchingUsers.get(0).getPersonId());
             return MATCH;
         }
@@ -42,10 +52,34 @@ public class Cycle1MatchingService {
         return NO_MATCH;
     }
 
+    private List<Person> getMatchingUsersWithVerifiedPostCode(List<Person> matchingUsers, List<String> allVerifiedPostCodes) {
+        return matchingUsers.stream()
+            .filter(person -> isContainedIn(person.getAddress().getPostcode(), allVerifiedPostCodes))
+            .collect(toList());
+    }
+
+    private boolean isContainedIn(String postcode, List<String> allVerifiedPostCodes) {
+        return allVerifiedPostCodes.stream()
+            .map(this::normalisePostcode)
+            .anyMatch(item -> item.equals(normalisePostcode(postcode)));
+    }
+
+    private String normalisePostcode(String postcode) {
+        return postcode.trim().toUpperCase().replace(" ", "");
+    }
+
     private List<String> getAllVerifiedSurnames(List<MatchingAttributesValueDto<String>> surnames) {
         return surnames.stream()
             .filter(MatchingAttributesValueDto::getVerified)
             .map(MatchingAttributesValueDto::getValue)
+            .collect(toList());
+    }
+
+    private List<String> getAllVerifiedPostcodes(List<AddressDto> addresses) {
+        return addresses.stream()
+            .filter(AddressDto::getVerified)
+            .map(AddressDto::getPostCode)
+            .filter(item -> !item.isEmpty())
             .collect(toList());
     }
 }
