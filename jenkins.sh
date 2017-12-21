@@ -1,5 +1,8 @@
 #!/bin/bash -eux
 
+shutdown="$(realpath shutdown.sh)"
+trap "sh $shutdown" EXIT
+
 # Start example local matching service with database migration
 ./startup.sh
 
@@ -20,4 +23,3 @@ EOF
     ./bin/verify-matching-service-test-tool
 
 popd
-./shutdown.sh
