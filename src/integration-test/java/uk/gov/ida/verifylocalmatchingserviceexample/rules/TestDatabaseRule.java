@@ -45,26 +45,35 @@ public class TestDatabaseRule extends ExternalResource {
     }
 
     public void ensurePidExist(String verifiedPid) {
-        handle.begin();
-        handle.execute("insert into verifiedPid (pid, person) values('" + verifiedPid + "', (select person_id from person limit 1))");
-        handle.commit();
+        ensurePidDoesNotExist(verifiedPid);
+        handle.createUpdate("insert into verifiedPid (pid, person) values(:verifiedPid, (select person_id from person limit 1))")
+                .bind("verifiedPid", verifiedPid)
+                .execute();
     }
 
     public void ensurePidDoesNotExist(String verifiedPid) {
-        handle.begin();
-        handle.execute("delete from verifiedPid where pid =('" + verifiedPid + "')");
-        handle.commit();
+        handle.createUpdate("delete from verifiedPid where pid = :verifiedPid")
+                .bind("verifiedPid", verifiedPid)
+                .execute();
     }
 
     public void ensureUserExist(String surname, LocalDate dateOfBirth) {
-        handle.begin();
-        handle.execute("insert into person (surname, date_of_birth) values ('" + surname + "', '" + dateOfBirth + "')");
-        handle.commit();
+        ensureUserDoesNotExist(surname, dateOfBirth);
+        handle.createUpdate("insert into person (surname, date_of_birth) values (:surname, :dateOfBirth)")
+                .bind("surname", surname)
+                .bind("dateOfBirth", dateOfBirth)
+                .execute();
     }
 
     public void ensureUserDoesNotExist(String surname, LocalDate dateOfBirth) {
-        handle.begin();
-        handle.execute("delete from person where surname = ('" + surname + "') and date_of_birth = ('" + dateOfBirth + "')");
-        handle.commit();
+        handle.createUpdate("delete from person where surname = :surname and date_of_birth = :dateOfBirth")
+                .bind("surname", surname)
+                .bind("dateOfBirth", dateOfBirth)
+                .execute();
+    }
+
+    public boolean checkIfPidExist(String verifiedPid) {
+        String pid = handle.select("select pid from verifiedPid where pid = ?", verifiedPid).mapTo(String.class).findOnly();
+        return !pid.isEmpty();
     }
 }

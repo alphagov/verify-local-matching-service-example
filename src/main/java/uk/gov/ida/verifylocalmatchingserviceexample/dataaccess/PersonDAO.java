@@ -17,7 +17,7 @@ public class PersonDAO {
 
     public List<Person> getMatchingUsers(List<String> surnames, LocalDate dateOfBirth) {
         return jdbi.withHandle(handle ->
-                handle.createQuery("select surname, date_of_birth from person where LOWER(surname) in (<surnames>) and date_of_birth = :dateOfBirth")
+                handle.createQuery("select person_id, surname, date_of_birth from person where LOWER(surname) in (<surnames>) and date_of_birth = :dateOfBirth")
                         .bindList("surnames", toLowerCase(surnames))
                         .bind("dateOfBirth", dateOfBirth)
                         .map(new PersonMapper())

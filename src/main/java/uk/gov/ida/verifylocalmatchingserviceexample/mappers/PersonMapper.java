@@ -11,7 +11,9 @@ import java.time.LocalDate;
 public class PersonMapper implements RowMapper<Person> {
     @Override
     public Person map(ResultSet rs, StatementContext ctx) throws SQLException {
+        String surname = rs.getString("surname");
         LocalDate dateOfBirth = LocalDate.parse(rs.getString("date_of_birth"));
-        return new Person(rs.getString("surname"), dateOfBirth);
+        Integer personId = rs.getInt("person_id");
+        return new Person(surname, dateOfBirth, personId);
     }
 }
