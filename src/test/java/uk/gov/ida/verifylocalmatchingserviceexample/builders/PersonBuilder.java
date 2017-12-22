@@ -9,7 +9,7 @@ import static uk.gov.ida.verifylocalmatchingserviceexample.builders.AddressBuild
 
 public class PersonBuilder {
 
-    private Integer id;
+    private Integer id = 1111;
     private String surname = "default-surname";
     private LocalDate dateOfBirth = LocalDate.now().minusYears(20);
     private Address address = anyAddress();
