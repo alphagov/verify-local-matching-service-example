@@ -64,7 +64,7 @@ public class MatchingServiceResourceTest {
     }
 
     @Test
-    public void shouldSavePidAndReturnMatchWhenOneUserWithSurnameDateOfBirthAndPostcodeIsFoundInCycle1Scenario() throws JsonProcessingException {
+    public void shouldSavePidAndReturnMatchWhenOneUserWithCaseInsensitiveSurnameDateOfBirthAndCaseInsensitivePostcodeIsFoundInCycle1Scenario() throws JsonProcessingException {
         LocalDate dateOfBirth = LocalDate.of(1884, 4, 6);
 
         testDatabaseRule.ensureUserWithAddressExist("some-SURNAME", dateOfBirth, "some-postcode");
