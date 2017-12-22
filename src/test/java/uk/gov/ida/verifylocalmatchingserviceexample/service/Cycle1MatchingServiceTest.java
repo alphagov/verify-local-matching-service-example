@@ -19,6 +19,7 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -68,6 +69,7 @@ public class Cycle1MatchingServiceTest {
         when(matchingServiceRequestDto.getMatchingAttributesDto().getSurnames()).thenReturn(anyListOfSurnamesWithValidatedValue);
 
         assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(NO_MATCH);
+        verify(personDAO, never()).getMatchingUsers(any(), any());
     }
 
     @Test
@@ -145,7 +147,25 @@ public class Cycle1MatchingServiceTest {
     }
 
     @Test
-    public void shouldSavePidAndReturnMatchWhenExactlyOneUserFoundWithSurnameDateOfBirthAndPostcode() {
+    public void shouldSavePidWhenThereIsMatchOnExactlyOneUserWithSurnameDateOfBirthAndPostcode() {
+        Person person = aPerson().withId(1233).withAddress(anAddress().withPostcode("some-postcode").build()).build();
+        List<AddressDto> addresses = Arrays.asList(
+            anAddressDtoBuilder().withPostCode("some-postcode").withVerified(true).build(),
+            anAddressDtoBuilder().withPostCode("another-postcode").withVerified(true).build()
+        );
+
+        when(matchingServiceRequestDto.getMatchingAttributesDto().getSurnames()).thenReturn(anyListOfSurnamesWithValidatedValue);
+        when(matchingServiceRequestDto.getMatchingAttributesDto().getDateOfBirth()).thenReturn(anyValidatedDateOfBirth);
+        when(matchingServiceRequestDto.getMatchingAttributesDto().getAddresses()).thenReturn(addresses);
+        when(personDAO.getMatchingUsers(any(), any())).thenReturn(Arrays.asList(person));
+
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(MATCH);
+
+        verify(verifiedPidDAO, times(1)).save(matchingServiceRequestDto.getHashedPid(), 1233);
+    }
+
+    @Test
+    public void shouldIgnoreCaseForPostcodeWhenMatching() {
         Person person = aPerson().withId(1233).withAddress(anAddress().withPostcode("Some   Postcode").build()).build();
         List<AddressDto> addresses = Arrays.asList(
             anAddressDtoBuilder().withPostCode("SomePostCode").withVerified(true).build(),
@@ -158,8 +178,6 @@ public class Cycle1MatchingServiceTest {
         when(personDAO.getMatchingUsers(any(), any())).thenReturn(Arrays.asList(person));
 
         assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(MATCH);
-
-        verify(verifiedPidDAO, times(1)).save(matchingServiceRequestDto.getHashedPid(), 1233);
     }
 
     @Test
