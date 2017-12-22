@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class PersonDAO {
+
     private Jdbi jdbi;
 
     public PersonDAO(Jdbi jdbi) {
@@ -17,11 +18,15 @@ public class PersonDAO {
 
     public List<Person> getMatchingUsers(List<String> surnames, LocalDate dateOfBirth) {
         return jdbi.withHandle(handle ->
-                handle.createQuery("select person_id, surname, date_of_birth from person where LOWER(surname) in (<surnames>) and date_of_birth = :dateOfBirth")
-                        .bindList("surnames", toLowerCase(surnames))
-                        .bind("dateOfBirth", dateOfBirth)
-                        .map(new PersonMapper())
-                        .list()
+            handle.createQuery("select person_id, surname, date_of_birth, postcode " +
+                "from person " +
+                "left outer join address " +
+                "on person.address = address.address_id " +
+                "where LOWER(surname) in (<surnames>) and date_of_birth = :dateOfBirth")
+                .bindList("surnames", toLowerCase(surnames))
+                .bind("dateOfBirth", dateOfBirth)
+                .map(new PersonMapper())
+                .list()
         );
     }
 
@@ -35,8 +40,8 @@ public class PersonDAO {
 
     private List<String> toLowerCase(List<String> surnames) {
         return surnames.stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toList());
+            .map(String::toLowerCase)
+            .collect(Collectors.toList());
     }
 
 }

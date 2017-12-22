@@ -6,31 +6,20 @@ import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributes
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributesValueDto;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static uk.gov.ida.verifylocalmatchingserviceexample.builders.AddressDtoBuilder.aAddressDtoBuilder;
+import static uk.gov.ida.verifylocalmatchingserviceexample.builders.AddressDtoBuilder.anAddressDtoBuilder;
+import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttributesValueDtoBuilder.aMatchingAttributesValueDtoBuilder;
 
 public class MatchingAttributesDtoBuilder {
-    private MatchingAttributesValueDto<String> firstName;
-    private MatchingAttributesValueDto<String> middleNames;
-
-    private List<MatchingAttributesValueDto<String>> surnames =
-            new LinkedList<MatchingAttributesValueDto<String>>() {{
-                add(MatchingAttributesValueDtoBuilder.<String>aMatchingAttributesValueDtoBuilder()
-                        .withValue("default-surname")
-                        .build());
-            }};
-
-    private MatchingAttributesValueDto<GenderDto> gender;
-    private MatchingAttributesValueDto<LocalDate> dateOfBirth =
-            MatchingAttributesValueDtoBuilder.<LocalDate>aMatchingAttributesValueDtoBuilder()
-                    .withValue(LocalDate.now())
-                    .build();
-
-    private List<AddressDto> addresses = new LinkedList<AddressDto>() {{
-        add(aAddressDtoBuilder().build());
-    }};
+    private MatchingAttributesValueDto<String> firstName = null;
+    private MatchingAttributesValueDto<String> middleNames = null;
+    private List<MatchingAttributesValueDto<String>> surnames = Arrays.asList(aMatchingAttributesValueDtoBuilder().withValue("default-surname").build());
+    private MatchingAttributesValueDto<GenderDto> gender = null;
+    private MatchingAttributesValueDto<LocalDate> dateOfBirth = aMatchingAttributesValueDtoBuilder().withValue(LocalDate.now()).build();
+    private List<AddressDto> addresses = Arrays.asList(anAddressDtoBuilder().build());
 
     public static MatchingAttributesDtoBuilder aMatchingAttributesDtoBuilder() {
         return new MatchingAttributesDtoBuilder();
@@ -56,7 +45,9 @@ public class MatchingAttributesDtoBuilder {
     }
 
     public MatchingAttributesDtoBuilder withSurname(MatchingAttributesValueDto<String> surname) {
-        this.surnames = new LinkedList<MatchingAttributesValueDto<String>>() {{ add(surname); }};
+        this.surnames = new LinkedList<MatchingAttributesValueDto<String>>() {{
+            add(surname);
+        }};
         return this;
     }
 

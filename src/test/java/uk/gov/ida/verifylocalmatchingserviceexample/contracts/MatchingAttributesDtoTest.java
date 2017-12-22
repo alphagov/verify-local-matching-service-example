@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static uk.gov.ida.verifylocalmatchingserviceexample.builders.AddressDtoBuilder.aAddressDtoBuilder;
+import static uk.gov.ida.verifylocalmatchingserviceexample.builders.AddressDtoBuilder.anAddressDtoBuilder;
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttributesDtoBuilder.aMatchingAttributesDtoBuilder;
 
 public class MatchingAttributesDtoTest {
@@ -68,7 +68,7 @@ public class MatchingAttributesDtoTest {
     public void shouldReturnConstraintViolationWhenAddressIsMissingRequiredFields() {
         MatchingAttributesDto matchingAttributesDto = aMatchingAttributesDtoBuilder()
                 .withAddresses(new LinkedList<AddressDto>() {{
-                    add(aAddressDtoBuilder().withVerified(null).build());
+                    add(anAddressDtoBuilder().withVerified(null).build());
                 }})
                 .build();
 

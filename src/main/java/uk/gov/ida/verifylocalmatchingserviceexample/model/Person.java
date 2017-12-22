@@ -3,14 +3,22 @@ package uk.gov.ida.verifylocalmatchingserviceexample.model;
 import java.time.LocalDate;
 
 public class Person {
-    private String surname;
-    private LocalDate dateOfBirth;
-    private Integer personId;
 
-    public Person(String surname, LocalDate dateOfBirth, Integer personId) {
+    private Integer personId;
+    private final String surname;
+    private final LocalDate dateOfBirth;
+    private final Address address;
+
+    public Person(
+        Integer personId,
+        String surname,
+        LocalDate dateOfBirth,
+        Address address
+    ) {
+        this.personId = personId;
         this.surname = surname;
         this.dateOfBirth = dateOfBirth;
-        this.personId = personId;
+        this.address = address;
     }
 
     public String getSurname() {
@@ -19,6 +27,10 @@ public class Person {
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
+    }
+
+    public Address getAddress() {
+        return address;
     }
 
     public Integer getPersonId() {

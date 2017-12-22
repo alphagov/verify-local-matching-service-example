@@ -14,7 +14,7 @@ public class AddressDtoBuilder {
     private String internationalPostCode;
     private String uprn;
 
-    public static AddressDtoBuilder aAddressDtoBuilder() {
+    public static AddressDtoBuilder anAddressDtoBuilder() {
         return new AddressDtoBuilder();
     }
 

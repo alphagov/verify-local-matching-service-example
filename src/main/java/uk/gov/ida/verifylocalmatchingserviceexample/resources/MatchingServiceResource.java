@@ -1,6 +1,5 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.resources;
 
-import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.service.MatchingService;
 
@@ -17,6 +16,7 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MatchingServiceResource {
+
     private MatchingService matchingService;
 
     public MatchingServiceResource(MatchingService matchingService) {
@@ -25,8 +25,7 @@ public class MatchingServiceResource {
 
     @POST
     public Response findMatchingUser(@NotNull @Valid MatchingServiceRequestDto matchingServiceRequest) {
-        MatchStatusResponseDto matchStatusResponse = matchingService.findMatchingUser(matchingServiceRequest);
-        return Response.ok(matchStatusResponse)
-                .build();
+        return Response.ok(matchingService.findMatchingUser(matchingServiceRequest))
+            .build();
     }
 }
