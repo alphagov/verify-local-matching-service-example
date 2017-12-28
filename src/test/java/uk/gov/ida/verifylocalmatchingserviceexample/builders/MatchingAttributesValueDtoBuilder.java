@@ -6,7 +6,7 @@ import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributes
 public class MatchingAttributesValueDtoBuilder<T> {
 
     private T value;
-    private DateTime from = new DateTime().minusYears(1);
+    private DateTime from = null;
     private DateTime to = null;
     private Boolean verified = false;
 

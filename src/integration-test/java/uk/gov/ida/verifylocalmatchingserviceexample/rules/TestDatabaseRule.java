@@ -70,7 +70,7 @@ public class TestDatabaseRule extends ExternalResource {
     }
 
     public void eraseAllData() {
-        handle.createUpdate("delete from verifiedpid").execute();
+        handle.createUpdate("delete from verifiedPid").execute();
         handle.createUpdate("delete from person").execute();
         handle.createUpdate("delete from address").execute();
     }

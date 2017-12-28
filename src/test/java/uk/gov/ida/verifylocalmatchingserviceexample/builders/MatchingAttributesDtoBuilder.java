@@ -7,6 +7,7 @@ import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributes
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,10 +17,12 @@ import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttr
 public class MatchingAttributesDtoBuilder {
     private MatchingAttributesValueDto<String> firstName = null;
     private MatchingAttributesValueDto<String> middleNames = null;
-    private List<MatchingAttributesValueDto<String>> surnames = Arrays.asList(aMatchingAttributesValueDtoBuilder().withValue("default-surname").build());
+    private List<MatchingAttributesValueDto<String>> surnames = Collections.singletonList(
+        aMatchingAttributesValueDtoBuilder().withValue("default-surname").build());
     private MatchingAttributesValueDto<GenderDto> gender = null;
-    private MatchingAttributesValueDto<LocalDate> dateOfBirth = aMatchingAttributesValueDtoBuilder().withValue(LocalDate.now()).build();
-    private List<AddressDto> addresses = Arrays.asList(anAddressDtoBuilder().build());
+    private MatchingAttributesValueDto<LocalDate> dateOfBirth = aMatchingAttributesValueDtoBuilder()
+        .withValue(LocalDate.now()).build();
+    private List<AddressDto> addresses = Collections.singletonList(anAddressDtoBuilder().build());
 
     public static MatchingAttributesDtoBuilder aMatchingAttributesDtoBuilder() {
         return new MatchingAttributesDtoBuilder();

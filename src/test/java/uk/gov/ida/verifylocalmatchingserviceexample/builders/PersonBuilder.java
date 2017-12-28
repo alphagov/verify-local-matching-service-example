@@ -23,7 +23,7 @@ public class PersonBuilder {
     }
 
     public static Person anyPerson() {
-        return new PersonBuilder().build();
+        return aPerson().build();
     }
 
     public Person build() {
