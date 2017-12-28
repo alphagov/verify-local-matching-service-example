@@ -95,6 +95,6 @@ public class Cycle1MatchingService {
     }
 
     private String getVerifiedFirstName(MatchingAttributesValueDto<String> firstName) {
-        return firstName != null || firstName.getVerified() ? firstName.getValue() : null;
+        return firstName != null && firstName.getVerified() ? firstName.getValue() : null;
     }
 }

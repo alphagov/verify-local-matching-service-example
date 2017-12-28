@@ -114,6 +114,17 @@ public class Cycle1MatchingServiceTest {
     }
 
     @Test
+    public void shouldReturnNoMatchWhenThereIsNoFirstNameInMatchingRequest() {
+        when(matchingServiceRequestDto.getMatchingAttributesDto().getSurnames()).thenReturn(getAnyListOfSurnamesWithValidatedValue());
+        when(matchingServiceRequestDto.getMatchingAttributesDto().getDateOfBirth()).thenReturn(getAnyVerifiedDateOfBirth());
+        when(matchingServiceRequestDto.getMatchingAttributesDto().getAddresses()).thenReturn(getAnyVerifiedAddress());
+        when(matchingServiceRequestDto.getMatchingAttributesDto().getFirstName()).thenReturn(null);
+        when(personDAO.getMatchingUsers(any(), any())).thenReturn(Collections.singletonList(anyPerson()));
+
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(NO_MATCH);
+    }
+
+    @Test
     public void shouldReturnNoMatchWhenThereAreNoUsersWithGivenSurnamesAndDateOfBirth() {
         List anyListOfSurnamesWithValidatedValue = getAnyListOfSurnamesWithValidatedValue();
         when(matchingServiceRequestDto.getMatchingAttributesDto().getSurnames()).thenReturn(anyListOfSurnamesWithValidatedValue);

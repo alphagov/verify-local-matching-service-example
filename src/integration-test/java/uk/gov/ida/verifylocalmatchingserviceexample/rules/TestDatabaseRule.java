@@ -42,26 +42,24 @@ public class TestDatabaseRule extends ExternalResource {
     }
 
     public void ensurePidExist(String verifiedPid) {
-        ensurePidDoesNotExist(verifiedPid);
         handle.createUpdate("insert into verifiedPid (pid, person) values(:verifiedPid, (select person_id from person limit 1))")
             .bind("verifiedPid", verifiedPid)
             .execute();
     }
 
-    public void ensurePidDoesNotExist(String verifiedPid) {
-        handle.createUpdate("delete from verifiedPid where pid = :verifiedPid")
-            .bind("verifiedPid", verifiedPid)
-            .execute();
-    }
-
-    public void ensureUserWithAddressExist(String surname, LocalDate dateOfBirth, String postcode) {
+    public void ensureUserWithAddressExist(String surname, String firstName, LocalDate dateOfBirth, String postcode) {
         handle.createUpdate("insert into address (postcode) values ('" + postcode + "')").execute();
         int addressId = handle.createQuery("select address_id from address where postcode = :postcode")
             .bind("postcode", postcode)
             .mapTo(Integer.class)
             .findFirst()
             .get();
-        handle.createUpdate("insert into person (surname, date_of_birth, address) values ('" + surname + "', '" + dateOfBirth + "', '" + addressId + "')").execute();
+        handle.createUpdate("insert into person (surname, first_name ,date_of_birth, address) values (:surname, :firstName, :dateOfBirth, :addressId)")
+            .bind("surname", surname)
+            .bind("firstName", firstName)
+            .bind("dateOfBirth", dateOfBirth)
+            .bind("addressId", addressId)
+            .execute();
     }
 
     public boolean checkIfPidExist(String verifiedPid) {

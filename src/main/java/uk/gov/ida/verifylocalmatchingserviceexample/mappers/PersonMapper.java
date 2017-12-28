@@ -15,7 +15,7 @@ public class PersonMapper implements RowMapper<Person> {
     public Person map(ResultSet rs, StatementContext ctx) throws SQLException {
         Integer personId = rs.getInt("person_id");
         String surname = rs.getString("surname");
-        String firstName = rs.getString("firstName");
+        String firstName = rs.getString("first_name");
         LocalDate dateOfBirth = LocalDate.parse(rs.getString("date_of_birth"));
         Address address = new Address(rs.getString("postcode"));
 
