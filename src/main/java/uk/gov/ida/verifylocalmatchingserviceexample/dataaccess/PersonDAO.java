@@ -18,7 +18,7 @@ public class PersonDAO {
 
     public List<Person> getMatchingUsers(List<String> surnames, LocalDate dateOfBirth) {
         return jdbi.withHandle(handle ->
-            handle.createQuery("select person_id, surname, date_of_birth, postcode " +
+            handle.createQuery("select person_id, surname, first_name, date_of_birth, postcode " +
                 "from person " +
                 "left outer join address " +
                 "on person.address = address.address_id " +

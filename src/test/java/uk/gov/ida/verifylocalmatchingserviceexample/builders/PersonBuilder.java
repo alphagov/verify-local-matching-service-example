@@ -11,6 +11,7 @@ public class PersonBuilder {
 
     private Integer id = 1111;
     private String surname = "default-surname";
+    private String firstName = "default-firstname";
     private LocalDate dateOfBirth = LocalDate.now().minusYears(20);
     private Address address = anyAddress();
 
@@ -27,7 +28,7 @@ public class PersonBuilder {
     }
 
     public Person build() {
-        return new Person(id, surname, dateOfBirth, address);
+        return new Person(id, surname, firstName, dateOfBirth, address);
     }
 
     public PersonBuilder withId(Integer id){
@@ -37,6 +38,11 @@ public class PersonBuilder {
 
     public PersonBuilder withSurname(String surname) {
         this.surname = surname;
+        return this;
+    }
+
+    public PersonBuilder withFirstName(String firstName) {
+        this.firstName = firstName;
         return this;
     }
 
