@@ -33,6 +33,7 @@ public class Cycle1MatchingServiceTest {
     private PersonDAO personDAO;
     private VerifiedPidDAO verifiedPidDAO;
     private Cycle1MatchingService cycle1MatchingService;
+    private Cycle3MatchingService cycle3MatchingService;
     private MatchingServiceRequestDto matchingServiceRequestDto;
 
     @Before
@@ -40,7 +41,8 @@ public class Cycle1MatchingServiceTest {
         personDAO = mock(PersonDAO.class);
         verifiedPidDAO = mock(VerifiedPidDAO.class);
         matchingServiceRequestDto = mock(MatchingServiceRequestDto.class, Answers.RETURNS_DEEP_STUBS);
-        cycle1MatchingService = new Cycle1MatchingService(personDAO, verifiedPidDAO);
+        cycle3MatchingService = mock(Cycle3MatchingService.class);
+        cycle1MatchingService = new Cycle1MatchingService(cycle3MatchingService, personDAO, verifiedPidDAO);
     }
 
     @Test
@@ -157,10 +159,10 @@ public class Cycle1MatchingServiceTest {
     @Test
     public void shouldCheckForFirstNameWhenMultipleRecordsMatchWithVerifiedPostCode() {
         LocalDate dateOfBirth = LocalDate.now().minusYears(10);
-        String firstName = "random-firstname";
+        String firstName = "random-first-name";
         Person personOne = aPerson()
             .withSurname("some-surname")
-            .withFirstName("not-matching-firstname")
+            .withFirstName("not-matching-first-name")
             .withDateOfBirth(dateOfBirth)
             .withAddress(anAddress().withPostcode("matching-postcode").build())
             .build();
@@ -185,7 +187,7 @@ public class Cycle1MatchingServiceTest {
 
     @Test
     public void shouldReturnNoMatchWhenNoHistoricalPostCodeCanBeMatched() {
-        String firstName = "random-firstname";
+        String firstName = "random-first-name";
         Person person = aPerson()
             .withFirstName(firstName)
             .withAddress(anAddress().withPostcode("some-postcode").build()).build();
@@ -239,9 +241,9 @@ public class Cycle1MatchingServiceTest {
     }
 
     @Test
-    public void shouldReturnNoMatchWhenMultipleRecordsMatchSurnameDateOfBirthAndPostcodeAndFirstName() {
+    public void shouldCheckForCycle3AttributeWhenMultipleRecordsMatchSurnameDateOfBirthAndPostcodeAndFirstName() {
         LocalDate dateOfBirth = LocalDate.now().minusYears(10);
-        String firstName = "random-firstname";
+        String firstName = "random-first-name";
         Person personOne = aPerson()
             .withSurname("some-surname")
             .withFirstName(firstName)
@@ -263,8 +265,9 @@ public class Cycle1MatchingServiceTest {
         when(matchingServiceRequestDto.getMatchingAttributesDto().getAddresses()).thenReturn(Collections.singletonList(address));
         when(matchingServiceRequestDto.getMatchingAttributesDto().getFirstName()).thenReturn(getVerifiedFirstName(firstName));
         when(personDAO.getMatchingUsers(any(), any())).thenReturn(Arrays.asList(personOne, personTwo));
+        when(cycle3MatchingService.matchUser(matchingServiceRequestDto, Arrays.asList(personOne, personTwo))).thenReturn(MATCH);
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(NO_MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(MATCH);
     }
 
     @Test
@@ -294,7 +297,6 @@ public class Cycle1MatchingServiceTest {
     @Test
     public void shouldNotSaveVerifiedPidInTheDatabaseWhenThereIsNoMatchingUser() {
         when(personDAO.getMatchingUsers(any(), any())).thenReturn(null);
-        cycle1MatchingService = new Cycle1MatchingService(personDAO, verifiedPidDAO);
 
         MatchingServiceRequestDto requestWithVerifiedSurname = aMatchingServiceRequestDtoBuilder().build();
 

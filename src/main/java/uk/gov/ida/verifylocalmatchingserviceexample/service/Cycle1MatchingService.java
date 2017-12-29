@@ -17,10 +17,12 @@ import static uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatus
 
 public class Cycle1MatchingService {
 
+    private Cycle3MatchingService cycle3MatchingService;
     private PersonDAO personDAO;
     private VerifiedPidDAO verifiedPidDAO;
 
-    public Cycle1MatchingService(PersonDAO personDAO, VerifiedPidDAO verifiedPidDAO) {
+    public Cycle1MatchingService(Cycle3MatchingService cycle3MatchingService, PersonDAO personDAO, VerifiedPidDAO verifiedPidDAO) {
+        this.cycle3MatchingService = cycle3MatchingService;
         this.personDAO = personDAO;
         this.verifiedPidDAO = verifiedPidDAO;
     }
@@ -54,6 +56,9 @@ public class Cycle1MatchingService {
             return MATCH;
         }
 
+        if(matchingUsers.size() > 1) {
+            return cycle3MatchingService.matchUser(matchingServiceRequest, matchingUsers);
+        }
         return NO_MATCH;
     }
 
