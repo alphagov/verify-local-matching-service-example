@@ -1,6 +1,7 @@
 #!/bin/bash -eux
 
-docker run --name postgres_for_matching_service -d -p 5432:5432 postgres
+docker network create --driver bridge db_network
+docker run --network=db_network --name postgres_for_matching_service -d -p 5432:5432 postgres
 
 # wait for the database to come up
 MAX_RETRIES=15
