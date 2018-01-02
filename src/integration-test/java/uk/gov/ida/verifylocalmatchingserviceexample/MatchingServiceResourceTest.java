@@ -24,6 +24,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.AddressDtoBuilder.anAddressDtoBuilder;
+import static uk.gov.ida.verifylocalmatchingserviceexample.builders.Cycle3AttributesDtoBuilder.aCycle3AttributesDtoBuilder;
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttributesDtoBuilder.aMatchingAttributesDtoBuilder;
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttributesValueDtoBuilder.aMatchingAttributesValueDtoBuilder;
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingServiceRequestDtoBuilder.aMatchingServiceRequestDtoBuilder;
@@ -87,6 +88,70 @@ public class MatchingServiceResourceTest {
 
         assertEquals(200, response.getStatus());
         assertEquals(MATCH, response.readEntity(MatchStatusResponseDto.class));
+    }
+
+    @Test
+    public void shouldReturnMatchWhenOneUserMatchFoundForCycle3Attribute() throws JsonProcessingException {
+        LocalDate dateOfBirth = LocalDate.of(1984, 6, 16);
+        String firstName = "some-first-name";
+        String surname = "some-surname";
+        String postcode = "some-postcode";
+
+        testDatabaseRule.ensureUserWithAddressExist(surname, firstName, dateOfBirth, postcode);
+        testDatabaseRule.ensureUserWithAddressExist(surname, firstName, dateOfBirth, postcode);
+
+        String nationalInsuranceNumber = "some-national-insurance";
+        testDatabaseRule.ensureUserWithNationalInsuranceNumberExist(testDatabaseRule.getLastInsertedPersonId(), nationalInsuranceNumber);
+
+        AddressDto address = anAddressDtoBuilder().withPostCode(postcode).withVerified(true).build();
+        MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
+            .withHashedPid("some-pid")
+            .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
+                .withDateOfBirth(getVerifiedDateOfBirth(dateOfBirth))
+                .withAddresses(Collections.singletonList(address))
+                .withFirstName(getVerifiedFirstName(firstName))
+                .withSurname(getVerifiedSurname(surname)).build())
+            .withCycle3AttributesDto(aCycle3AttributesDtoBuilder().withNationalInsuranceNumber(nationalInsuranceNumber).build())
+            .build();
+
+        Response response = APP_RULE.client()
+            .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
+            .request()
+            .post(Entity.entity(getRequestString(matchingServiceRequestDto), APPLICATION_JSON_TYPE));
+
+        assertEquals(200, response.getStatus());
+        assertEquals(MATCH, response.readEntity(MatchStatusResponseDto.class));
+    }
+
+    @Test
+    public void shouldReturnNoMatchWhenUserDoesNotMatchCycle3Attribute() throws JsonProcessingException {
+        LocalDate dateOfBirth = LocalDate.of(1984, 6, 16);
+        String firstName = "some-first-name";
+        String surname = "some-surname";
+        String postcode = "some-postcode";
+
+        testDatabaseRule.ensureUserWithAddressExist(surname, firstName, dateOfBirth, postcode);
+        testDatabaseRule.ensureUserWithNationalInsuranceNumberExist(testDatabaseRule.getLastInsertedPersonId(), "some-national-insurance");
+        testDatabaseRule.ensureUserWithAddressExist(surname, firstName, dateOfBirth, postcode);
+
+        AddressDto address = anAddressDtoBuilder().withPostCode(postcode).withVerified(true).build();
+        MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
+            .withHashedPid("some-pid")
+            .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
+                .withDateOfBirth(getVerifiedDateOfBirth(dateOfBirth))
+                .withAddresses(Collections.singletonList(address))
+                .withFirstName(getVerifiedFirstName(firstName))
+                .withSurname(getVerifiedSurname(surname)).build())
+            .withCycle3AttributesDto(aCycle3AttributesDtoBuilder().withNationalInsuranceNumber("not-matching-insurance-number").build())
+            .build();
+
+        Response response = APP_RULE.client()
+            .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
+            .request()
+            .post(Entity.entity(getRequestString(matchingServiceRequestDto), APPLICATION_JSON_TYPE));
+
+        assertEquals(200, response.getStatus());
+        assertEquals(NO_MATCH, response.readEntity(MatchStatusResponseDto.class));
     }
 
     @Test

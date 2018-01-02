@@ -62,6 +62,17 @@ public class TestDatabaseRule extends ExternalResource {
             .execute();
     }
 
+    public int getLastInsertedPersonId() {
+        return handle.select("select MAX(person_id) FROM person").mapTo(Integer.class).findOnly();
+    }
+
+    public void ensureUserWithNationalInsuranceNumberExist(Integer personId, String nationalInsuranceNumber){
+        handle.createUpdate("insert into nationalInsuranceNumber (national_insurance_number, person_id) values (:nationalInsuranceNumber, :personId)")
+            .bind("nationalInsuranceNumber", nationalInsuranceNumber)
+            .bind("personId", personId)
+            .execute();
+    }
+
     public boolean checkIfPidExist(String verifiedPid) {
         String pid = handle.select("select pid from verifiedPid where pid = ?", verifiedPid).mapTo(String.class).findOnly();
         return !pid.isEmpty();
@@ -69,6 +80,7 @@ public class TestDatabaseRule extends ExternalResource {
 
     public void eraseAllData() {
         handle.createUpdate("delete from verifiedPid").execute();
+        handle.createUpdate("delete from nationalInsuranceNumber").execute();
         handle.createUpdate("delete from person").execute();
         handle.createUpdate("delete from address").execute();
     }
