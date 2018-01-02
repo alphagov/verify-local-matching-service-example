@@ -13,13 +13,6 @@ pushd ../verify-matching-service-test-tool
     unzip verify-matching-service-test-tool-*.zip
     cd verify-matching-service-test-tool-*
 
-    rm -rf examples
-    cp -r ../../verify-local-matching-service-example/examples .
-
-cat <<EOF > verify-matching-service-test-tool.yml
-localMatchingService:
-  matchUrl: http://localhost:50500/match-user
-EOF
-    ./bin/verify-matching-service-test-tool
+    ./bin/verify-matching-service-test-tool -e ../../verify-local-matching-service-example/examples -c ../../verify-local-matching-service-example/verify-service-test-tool.yml
 
 popd

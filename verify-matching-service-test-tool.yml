@@ -1,0 +1,3 @@
+localMatchingService:
+  matchUrl: http://localhost:50500/match-user
+
