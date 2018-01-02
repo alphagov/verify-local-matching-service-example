@@ -13,5 +13,5 @@ done
 set -e
 
 # Start example local matching service with database migration
-./gradlew clean installDist
+./gradlew clean installDist $@
 DB_URI="jdbc:postgresql://localhost:5432/postgres?user=postgres" ./build/install/verify-local-matching-service-example/bin/verify-local-matching-service-example &

@@ -4,7 +4,7 @@ shutdown="$(realpath shutdown.sh)"
 trap "sh $shutdown" EXIT
 
 # Start example local matching service with database migration
-./startup.sh
+./startup.sh -x clean
 
 sleep 10 # to give the above application time to start
 
