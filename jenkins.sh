@@ -13,6 +13,5 @@ pushd ../verify-matching-service-test-tool
     unzip verify-matching-service-test-tool-*.zip
     cd verify-matching-service-test-tool-*
 
-    ./bin/verify-matching-service-test-tool -e ../../verify-local-matching-service-example/examples -c ../../verify-local-matching-service-example/verify-service-test-tool.yml
-
+    ./bin/verify-matching-service-test-tool -e ../../verify-local-matching-service-example/examples -c ../../verify-local-matching-service-example/verify-matching-service-test-tool.yml
 popd
