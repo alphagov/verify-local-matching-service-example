@@ -17,6 +17,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
@@ -64,26 +65,19 @@ public class MatchingServiceResourceTest {
     }
 
     @Test
-    public void shouldSavePidAndReturnMatchWhenOneUserWithCaseInsensitiveSurnameDateOfBirthAndCaseInsensitivePostcodeIsFoundInCycle1Scenario() throws JsonProcessingException {
+    public void shouldReturnMatchWhenUserWithCaseInsensitiveSurnameDateOfBirthPostcodeFirstNameIsFoundInCycle1Scenario() throws JsonProcessingException {
         LocalDate dateOfBirth = LocalDate.of(1884, 4, 6);
 
-        testDatabaseRule.ensureUserWithAddressExist("some-SURNAME", dateOfBirth, "some-postcode");
+        testDatabaseRule.ensureUserWithAddressExist("some-SURNAME", "some-first-name", dateOfBirth, "some-postcode");
 
-        MatchingAttributesValueDto verifiedSurname = aMatchingAttributesValueDtoBuilder()
-            .withVerified(true)
-            .withValue("SOME-surname")
-            .build();
-        MatchingAttributesValueDto verifiedDateOfBirth = aMatchingAttributesValueDtoBuilder()
-            .withVerified(true)
-            .withValue(dateOfBirth)
-            .build();
         AddressDto address = anAddressDtoBuilder().withPostCode("SOME-postcode").withVerified(true).build();
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
             .withHashedPid("some-pid")
             .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
-                .withDateOfBirth(verifiedDateOfBirth)
-                .withAddresses(Arrays.asList(address))
-                .withSurname(verifiedSurname).build())
+                .withDateOfBirth(getVerifiedDateOfBirth(dateOfBirth))
+                .withAddresses(Collections.singletonList(address))
+                .withFirstName(getVerifiedFirstName("some-first-name"))
+                .withSurname(getVerifiedSurname("SOME-surname")).build())
             .build();
 
         Response response = APP_RULE.client()
@@ -93,32 +87,49 @@ public class MatchingServiceResourceTest {
 
         assertEquals(200, response.getStatus());
         assertEquals(MATCH, response.readEntity(MatchStatusResponseDto.class));
+    }
+
+    @Test
+    public void shouldSavePidWhenOneUserMatchIsFoundInCycle1Scenario() throws JsonProcessingException {
+        LocalDate dateOfBirth = LocalDate.of(1884, 4, 6);
+
+        String surname = "some-surname";
+        String postcode = "some-postcode";
+        testDatabaseRule.ensureUserWithAddressExist(surname, "some-first-name", dateOfBirth, postcode);
+
+        AddressDto address = anAddressDtoBuilder().withPostCode(postcode).withVerified(true).build();
+        MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
+            .withHashedPid("some-pid")
+            .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
+                .withDateOfBirth(getVerifiedDateOfBirth(dateOfBirth))
+                .withAddresses(Collections.singletonList(address))
+                .withFirstName(getVerifiedFirstName("some-first-name"))
+                .withSurname(getVerifiedSurname(surname)).build())
+            .build();
+
+        Response response = APP_RULE.client()
+            .target(String.format("http://localhost:%d/match-user", APP_RULE.getLocalPort()))
+            .request()
+            .post(Entity.entity(getRequestString(matchingServiceRequestDto), APPLICATION_JSON_TYPE));
+
+        assertEquals(200, response.getStatus());
         assertTrue(testDatabaseRule.checkIfPidExist(matchingServiceRequestDto.getHashedPid()));
     }
 
     @Test
-    public void shouldReturnNoMatchWhenMultipleUserWithSurnameDateOfBirthAndPostcodeIsFoundInCycle1Scenario() throws JsonProcessingException {
+    public void shouldReturnNoMatchWhenMultipleUserWithSurnameDateOfBirthPostcodeAndFirstNameIsFoundInCycle1Scenario() throws JsonProcessingException {
         LocalDate dateOfBirth = LocalDate.of(1884, 4, 6);
 
-        testDatabaseRule.ensurePidDoesNotExist("some-pid");
-        testDatabaseRule.ensureUserWithAddressExist("some-surname", dateOfBirth, "some-postcode");
-        testDatabaseRule.ensureUserWithAddressExist("some-surname", dateOfBirth, "some-postcode");
+        testDatabaseRule.ensureUserWithAddressExist("some-surname", "some-firstname", dateOfBirth, "some-postcode");
+        testDatabaseRule.ensureUserWithAddressExist("some-surname", "some-firstname", dateOfBirth, "some-postcode");
 
-        MatchingAttributesValueDto verifiedSurname = aMatchingAttributesValueDtoBuilder()
-            .withVerified(true)
-            .withValue("some-surname")
-            .build();
-        MatchingAttributesValueDto verifiedDateOfBirth = aMatchingAttributesValueDtoBuilder()
-            .withVerified(true)
-            .withValue(dateOfBirth)
-            .build();
         AddressDto address = anAddressDtoBuilder().withPostCode("SOME-postcode").withVerified(true).build();
         MatchingServiceRequestDto matchingServiceRequestDto = aMatchingServiceRequestDtoBuilder()
             .withHashedPid("some-pid")
             .withMatchingAttributesDto(aMatchingAttributesDtoBuilder()
-                .withDateOfBirth(verifiedDateOfBirth)
+                .withDateOfBirth(getVerifiedDateOfBirth(dateOfBirth))
                 .withAddresses(Arrays.asList(address))
-                .withSurname(verifiedSurname).build())
+                .withSurname(getVerifiedSurname("some-surname")).build())
             .build();
 
         Response response = APP_RULE.client()
@@ -128,6 +139,27 @@ public class MatchingServiceResourceTest {
 
         assertEquals(200, response.getStatus());
         assertEquals(NO_MATCH, response.readEntity(MatchStatusResponseDto.class));
+    }
+
+    private MatchingAttributesValueDto<String> getVerifiedFirstName(String firstName) {
+        return aMatchingAttributesValueDtoBuilder()
+            .withVerified(true)
+            .withValue(firstName)
+            .build();
+    }
+
+    private MatchingAttributesValueDto getVerifiedSurname(String surname) {
+        return aMatchingAttributesValueDtoBuilder()
+            .withVerified(true)
+            .withValue(surname)
+            .build();
+    }
+
+    private MatchingAttributesValueDto getVerifiedDateOfBirth(LocalDate dateOfBirth) {
+        return aMatchingAttributesValueDtoBuilder()
+            .withVerified(true)
+            .withValue(dateOfBirth)
+            .build();
     }
 
     private String getRequestString(MatchingServiceRequestDto matchingServiceRequestDto) throws JsonProcessingException {

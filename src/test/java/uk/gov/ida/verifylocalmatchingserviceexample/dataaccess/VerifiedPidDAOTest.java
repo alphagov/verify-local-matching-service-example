@@ -10,6 +10,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertTrue;
 
 public class VerifiedPidDAOTest {
+
     @Rule
     public TestDataSourceRule testDataSourceRule = new TestDataSourceRule();
     private Jdbi jdbi;

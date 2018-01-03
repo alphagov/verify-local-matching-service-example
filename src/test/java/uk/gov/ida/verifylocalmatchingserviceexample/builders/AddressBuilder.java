@@ -15,7 +15,7 @@ public class AddressBuilder {
     }
 
     public static Address anyAddress() {
-        return new AddressBuilder().build();
+        return anAddress().build();
     }
 
     public Address build() {

@@ -27,7 +27,7 @@ public class Cycle1MatchingService {
 
     public MatchStatusResponseDto matchUser(MatchingServiceRequestDto matchingServiceRequest) {
         MatchingAttributesValueDto<LocalDate> dateOfBirth = matchingServiceRequest.getMatchingAttributesDto().getDateOfBirth();
-        List<String> verifiedSurnames = getAllVerifiedSurnames(matchingServiceRequest.getMatchingAttributesDto().getSurnames());
+        List<String> verifiedSurnames = getVerifiedSurnames(matchingServiceRequest.getMatchingAttributesDto().getSurnames());
 
         if (!dateOfBirth.getVerified() || verifiedSurnames.isEmpty()) {
             return NO_MATCH;
@@ -38,18 +38,29 @@ public class Cycle1MatchingService {
             return NO_MATCH;
         }
 
-        List<String> allVerifiedPostCodes = getAllVerifiedPostcodes(matchingServiceRequest.getMatchingAttributesDto().getAddresses());
-        if (allVerifiedPostCodes.size() < 1) {
+        List<String> verifiedPostcodes = getVerifiedPostcodes(matchingServiceRequest.getMatchingAttributesDto().getAddresses());
+        if (verifiedPostcodes.size() > 0) {
+            matchingUsers = getMatchingUsersWithVerifiedPostCode(matchingUsers, verifiedPostcodes);
+        }
+
+        String verifiedFirstName = getVerifiedFirstName(matchingServiceRequest.getMatchingAttributesDto().getFirstName());
+        if(verifiedFirstName == null) {
             return NO_MATCH;
         }
 
-        List<Person> matchingUsersWithVerifiedPostCode = getMatchingUsersWithVerifiedPostCode(matchingUsers, allVerifiedPostCodes);
-        if (matchingUsersWithVerifiedPostCode.size() == 1) {
+        matchingUsers = getMatchingUsersWithVerifiedFirstName(matchingUsers, verifiedFirstName);
+        if (matchingUsers.size() == 1) {
             verifiedPidDAO.save(matchingServiceRequest.getHashedPid(), matchingUsers.get(0).getPersonId());
             return MATCH;
         }
 
         return NO_MATCH;
+    }
+
+    private List<Person> getMatchingUsersWithVerifiedFirstName(List<Person> matchingUsers, String firstName) {
+        return matchingUsers.stream()
+            .filter(person -> normalise(firstName).equals(normalise(person.getFirstName())))
+            .collect(toList());
     }
 
     private List<Person> getMatchingUsersWithVerifiedPostCode(List<Person> matchingUsers, List<String> allVerifiedPostCodes) {
@@ -60,26 +71,30 @@ public class Cycle1MatchingService {
 
     private boolean isContainedIn(String postcode, List<String> allVerifiedPostCodes) {
         return allVerifiedPostCodes.stream()
-            .map(this::normalisePostcode)
-            .anyMatch(item -> item.equals(normalisePostcode(postcode)));
+            .map(this::normalise)
+            .anyMatch(item -> item.equals(normalise(postcode)));
     }
 
-    private String normalisePostcode(String postcode) {
-        return postcode.trim().toUpperCase().replace(" ", "");
+    private String normalise(String value) {
+        return value.trim().toUpperCase().replace(" ", "");
     }
 
-    private List<String> getAllVerifiedSurnames(List<MatchingAttributesValueDto<String>> surnames) {
+    private List<String> getVerifiedSurnames(List<MatchingAttributesValueDto<String>> surnames) {
         return surnames.stream()
             .filter(MatchingAttributesValueDto::getVerified)
             .map(MatchingAttributesValueDto::getValue)
             .collect(toList());
     }
 
-    private List<String> getAllVerifiedPostcodes(List<AddressDto> addresses) {
+    private List<String> getVerifiedPostcodes(List<AddressDto> addresses) {
         return addresses.stream()
             .filter(AddressDto::getVerified)
             .map(AddressDto::getPostCode)
             .filter(item -> !item.isEmpty())
             .collect(toList());
+    }
+
+    private String getVerifiedFirstName(MatchingAttributesValueDto<String> firstName) {
+        return firstName != null && firstName.getVerified() ? firstName.getValue() : null;
     }
 }

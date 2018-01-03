@@ -6,23 +6,29 @@ public class Person {
 
     private Integer personId;
     private final String surname;
+    private final String firstName;
     private final LocalDate dateOfBirth;
     private final Address address;
 
     public Person(
         Integer personId,
         String surname,
-        LocalDate dateOfBirth,
+        String firstName, LocalDate dateOfBirth,
         Address address
     ) {
         this.personId = personId;
         this.surname = surname;
+        this.firstName = firstName;
         this.dateOfBirth = dateOfBirth;
         this.address = address;
     }
 
     public String getSurname() {
         return surname;
+    }
+
+    public String getFirstName() {
+        return firstName;
     }
 
     public LocalDate getDateOfBirth() {
