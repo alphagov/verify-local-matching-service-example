@@ -13,7 +13,7 @@ public class AddressDto {
     @NotNull
     private Boolean verified;
     @JsonProperty
-    @NotNull
+    //@NotNull
     private DateTime fromDate;
     @JsonProperty
     private DateTime toDate;

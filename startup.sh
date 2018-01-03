@@ -1,4 +1,4 @@
-#!/bin/bash -eux
+#!/bin/bash -eu
 
 docker network create --driver bridge db_network
 docker run --network=db_network --name postgres_for_matching_service -d -p 5432:5432 postgres

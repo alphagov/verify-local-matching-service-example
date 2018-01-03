@@ -88,7 +88,7 @@ public class Cycle1MatchingService {
 
     private List<String> getVerifiedPostcodes(List<AddressDto> addresses) {
         return addresses.stream()
-            .filter(AddressDto::getVerified)
+            //.filter(AddressDto::getVerified)
             .map(AddressDto::getPostCode)
             .filter(item -> !item.isEmpty())
             .collect(toList());

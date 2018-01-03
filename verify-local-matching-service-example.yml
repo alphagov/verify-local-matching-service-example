@@ -9,7 +9,7 @@ server:
   adminContextPath: /admin
   connector:
     type: http
-    port: ${PORT:-50500}
+    port: ${LMS_PORT:-50500}
 
 # Logging configuration
 # see: http://www.dropwizard.io/1.1.2/docs/manual/configuration.html#logging
