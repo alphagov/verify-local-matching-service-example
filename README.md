@@ -48,8 +48,6 @@ This example local matching service will only return `match` or `no match`. It d
 
 The example ignores any attributes where `verified` is set to `false`. This would be a suitable starting point for any service with an existing dataset expected to include most new users.
 
-The example will ignore any verified historical
-
 The example is case insensitive and will remove any spaces in requests containing postcodes.
 
 ## Run
