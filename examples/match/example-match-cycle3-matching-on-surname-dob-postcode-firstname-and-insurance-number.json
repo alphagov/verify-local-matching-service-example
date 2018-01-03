@@ -1,0 +1,41 @@
+{
+  "cycle3Dataset": {
+    "attributes": {
+      "nationalInsuranceNumber": "HM 28 15 29 B"
+    }
+  },
+  "hashedPid": "random-pid-cycle3-matching",
+  "levelOfAssurance": "LEVEL_2",
+  "matchId": "default-match-id",
+  "matchingDataset": {
+    "addresses": [
+      {
+        "fromDate": "2005-05-14T00:00:00.000Z",
+        "lines": [
+          "10 George Street"
+        ],
+        "postCode": "WR8 0TY",
+        "verified": true
+      }
+    ],
+    "dateOfBirth": {
+      "value": "1961-03-24",
+      "verified": true
+    },
+    "firstName": {
+      "value": "Smith",
+      "verified": true
+    },
+    "gender": {
+      "value": "MALE",
+      "verified": true
+    },
+    "surnames": [
+      {
+        "from": "2010-01-20T00:00:00.000Z",
+        "value": "Aidan",
+        "verified": true
+      }
+    ]
+  }
+}
