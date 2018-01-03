@@ -12,6 +12,8 @@ For more guidance on the role of a local matching service and how to build one, 
 
 This example uses a simple database and matching strategy. It has not been designed to be used in front of a real database.
 
+See the [examples folder](/examples/) for example matching datasets.
+
 ### Database
 
 This example local matching service uses a SQL database. Refer to the [database schema](/docs/schema.png) for details.
@@ -44,11 +46,13 @@ If the example finds a match in Cycles 1 or 3 it will store the PID in the datab
 
 **Caveats**
 
-This example local matching service will only return `match` or `no match`. It does not provide any fuzzy matching, for example matching `ONeill` to `O'Neill` or `Will` to `William`. The example does not provide any means of logging or investigating results.
+This example local matching service searches for matches through all address and surnames in the database regardless of their history. 
+
+It will only return `match` or `no match`. It does not provide any fuzzy matching, for example matching `ONeill` to `O'Neill` or `Will` to `William`. The example does not provide any means of logging or investigating results.
 
 The example ignores any attributes where `verified` is set to `false`. This would be a suitable starting point for any service with an existing dataset expected to include most new users.
 
-The example is case insensitive and will remove any spaces in requests containing postcodes.
+The example is not case sensitive and will remove any spaces in requests containing postcodes.
 
 ## Run
 
@@ -63,10 +67,16 @@ To run the example local matching service locally, you'll need:
 
 ### Build
 
-To run the matching service without a clean database, run the following then execute the script in install/bin [need andy]
+To run the matching service without a clean database, run
 
 ```
 ./gradlew installDist
+```
+
+Then execute
+
+```
+build/install/verify-local-matching-service-example/bin/verify-local-matching-service-example
 ```
 
 To run the matching service with a clean data, run
@@ -77,7 +87,7 @@ To run the matching service with a clean data, run
 
 ### Configuration
 
-You can configure the local matching service using environment variables or command line arguments.
+You can configure the local matching service using environment variables or Command Line arguments.
 
 **Environment variables**
 
