@@ -9,9 +9,9 @@ INSERT INTO address (lines, city, country, postcode)
 INSERT INTO person (first_name, middle_name, surname, address, date_of_birth)
     VALUES ('Smith', null, 'Aidan', (SELECT address_id FROM address WHERE postcode = 'WR8 0TY'), '1961-03-24');
 INSERT INTO nationalInsuranceNumber (national_insurance_number, person_id)
-    VALUES ('HM 28 15 29 B', (SELECT currval(pg_get_serial_sequence('person', 'person_id'))));
+    VALUES ('HM 28 15 29 B', (SELECT MAX(person_id) FROM person));
 
 INSERT INTO person (first_name, middle_name, surname, address, date_of_birth)
     VALUES ('Smith', null, 'Aidan', (SELECT address_id FROM address WHERE postcode = 'WR8 0TY'), '1961-03-24');
 INSERT INTO nationalInsuranceNumber (national_insurance_number, person_id)
-    VALUES ('OS 24 25 19 D', (SELECT currval(pg_get_serial_sequence('person', 'person_id'))));
+    VALUES ('OS 24 25 19 D', (SELECT MAX(person_id) FROM person));

@@ -1,7 +1,6 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.service;
 
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.Cycle3AttributesDto;
-import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.NationalInsuranceNumberDAO;
 import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.VerifiedPidDAO;
@@ -9,9 +8,8 @@ import uk.gov.ida.verifylocalmatchingserviceexample.model.Person;
 
 import java.util.List;
 
+import static java.util.Collections.EMPTY_LIST;
 import static java.util.stream.Collectors.toList;
-import static uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto.MATCH;
-import static uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto.NO_MATCH;
 
 public class Cycle3MatchingService {
 
@@ -24,10 +22,10 @@ public class Cycle3MatchingService {
         this.verifiedPidDAO = verifiedPidDAO;
     }
 
-    public MatchStatusResponseDto matchUser(MatchingServiceRequestDto matchingServiceRequest, List<Person> cycle1MatchingUsers) {
+    public List<Integer> matchUser(MatchingServiceRequestDto matchingServiceRequest, List<Person> cycle1MatchingUsers) {
         Cycle3AttributesDto cycle3AttributesDto = matchingServiceRequest.getCycle3AttributesDto();
         if (!isNationalInsuranceNumberPresent(cycle3AttributesDto)) {
-            return NO_MATCH;
+            return EMPTY_LIST;
         }
 
         List<Integer> personIds = cycle1MatchingUsers.stream().map(Person::getPersonId).collect(toList());
@@ -36,9 +34,9 @@ public class Cycle3MatchingService {
 
         if (matchingUserIds.size() == 1) {
             verifiedPidDAO.save(matchingServiceRequest.getHashedPid(), matchingUserIds.get(0));
-            return MATCH;
         }
-        return NO_MATCH;
+
+        return matchingUserIds;
     }
 
     private boolean isNationalInsuranceNumberPresent(Cycle3AttributesDto cycle3AttributesDto) {

@@ -26,9 +26,9 @@ public class VerifyLocalMatchingServiceExampleFactory {
 
         Cycle0MatchingService cycle0MatchingService = new Cycle0MatchingService(verifiedPidDAO);
         Cycle3MatchingService cycle3MatchingService = new Cycle3MatchingService(new NationalInsuranceNumberDAO(jdbi), verifiedPidDAO);
-        Cycle1MatchingService cycle1MatchingService = new Cycle1MatchingService(cycle3MatchingService, new PersonDAO(jdbi), verifiedPidDAO);
+        Cycle1MatchingService cycle1MatchingService = new Cycle1MatchingService(new PersonDAO(jdbi), verifiedPidDAO);
 
-        return new MatchingServiceResource(new MatchingService(cycle0MatchingService, cycle1MatchingService));
+        return new MatchingServiceResource(new MatchingService(cycle0MatchingService, cycle1MatchingService, cycle3MatchingService));
     }
 
     public HealthCheck getDatabaseHealthCheck(Jdbi jdbi) {

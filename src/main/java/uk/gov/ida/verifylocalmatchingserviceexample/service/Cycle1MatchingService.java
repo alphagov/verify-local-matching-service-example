@@ -1,7 +1,6 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.service;
 
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.AddressDto;
-import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributesValueDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.PersonDAO;
@@ -11,33 +10,30 @@ import uk.gov.ida.verifylocalmatchingserviceexample.model.Person;
 import java.time.LocalDate;
 import java.util.List;
 
+import static java.util.Collections.EMPTY_LIST;
 import static java.util.stream.Collectors.toList;
-import static uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto.MATCH;
-import static uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto.NO_MATCH;
 
 public class Cycle1MatchingService {
 
-    private Cycle3MatchingService cycle3MatchingService;
     private PersonDAO personDAO;
     private VerifiedPidDAO verifiedPidDAO;
 
-    public Cycle1MatchingService(Cycle3MatchingService cycle3MatchingService, PersonDAO personDAO, VerifiedPidDAO verifiedPidDAO) {
-        this.cycle3MatchingService = cycle3MatchingService;
+    public Cycle1MatchingService(PersonDAO personDAO, VerifiedPidDAO verifiedPidDAO) {
         this.personDAO = personDAO;
         this.verifiedPidDAO = verifiedPidDAO;
     }
 
-    public MatchStatusResponseDto matchUser(MatchingServiceRequestDto matchingServiceRequest) {
+    public List<Person> matchUser(MatchingServiceRequestDto matchingServiceRequest) {
         MatchingAttributesValueDto<LocalDate> dateOfBirth = matchingServiceRequest.getMatchingAttributesDto().getDateOfBirth();
         List<String> verifiedSurnames = getVerifiedSurnames(matchingServiceRequest.getMatchingAttributesDto().getSurnames());
 
         if (!dateOfBirth.getVerified() || verifiedSurnames.isEmpty()) {
-            return NO_MATCH;
+            return EMPTY_LIST;
         }
 
         List<Person> matchingUsers = personDAO.getMatchingUsers(verifiedSurnames, dateOfBirth.getValue());
         if (matchingUsers.size() < 1) {
-            return NO_MATCH;
+            return matchingUsers;
         }
 
         List<String> verifiedPostcodes = getVerifiedPostcodes(matchingServiceRequest.getMatchingAttributesDto().getAddresses());
@@ -47,19 +43,15 @@ public class Cycle1MatchingService {
 
         String verifiedFirstName = getVerifiedFirstName(matchingServiceRequest.getMatchingAttributesDto().getFirstName());
         if(verifiedFirstName == null) {
-            return NO_MATCH;
+            return EMPTY_LIST;
         }
 
         matchingUsers = getMatchingUsersWithVerifiedFirstName(matchingUsers, verifiedFirstName);
         if (matchingUsers.size() == 1) {
             verifiedPidDAO.save(matchingServiceRequest.getHashedPid(), matchingUsers.get(0).getPersonId());
-            return MATCH;
         }
 
-        if(matchingUsers.size() > 1) {
-            return cycle3MatchingService.matchUser(matchingServiceRequest, matchingUsers);
-        }
-        return NO_MATCH;
+        return matchingUsers;
     }
 
     private List<Person> getMatchingUsersWithVerifiedFirstName(List<Person> matchingUsers, String firstName) {
