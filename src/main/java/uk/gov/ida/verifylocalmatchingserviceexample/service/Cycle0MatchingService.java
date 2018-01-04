@@ -1,7 +1,8 @@
 package uk.gov.ida.verifylocalmatchingserviceexample.service;
 
-import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.VerifiedPidDAO;
+
+import java.util.Optional;
 
 public class Cycle0MatchingService {
     private VerifiedPidDAO verifiedPid;
@@ -10,9 +11,7 @@ public class Cycle0MatchingService {
         this.verifiedPid = verifiedPid;
     }
 
-    public MatchStatusResponseDto checkForPid(String hashedPid) {
-        return verifiedPid.getVerifiedPid(hashedPid)
-                .map(result -> MatchStatusResponseDto.MATCH)
-                .orElse(MatchStatusResponseDto.NO_MATCH);
+    public Optional<String> checkForPid(String hashedPid) {
+        return verifiedPid.getVerifiedPid(hashedPid);
     }
 }

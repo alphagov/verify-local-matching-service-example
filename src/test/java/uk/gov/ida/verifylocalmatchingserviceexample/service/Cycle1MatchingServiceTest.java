@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.AddressDto;
-import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingAttributesValueDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchingServiceRequestDto;
 import uk.gov.ida.verifylocalmatchingserviceexample.dataaccess.PersonDAO;
@@ -25,8 +24,6 @@ import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingAttr
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.MatchingServiceRequestDtoBuilder.aMatchingServiceRequestDtoBuilder;
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.PersonBuilder.aPerson;
 import static uk.gov.ida.verifylocalmatchingserviceexample.builders.PersonBuilder.anyPerson;
-import static uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto.MATCH;
-import static uk.gov.ida.verifylocalmatchingserviceexample.contracts.MatchStatusResponseDto.NO_MATCH;
 
 public class Cycle1MatchingServiceTest {
 
@@ -44,7 +41,7 @@ public class Cycle1MatchingServiceTest {
     }
 
     @Test
-    public void shouldReturnMatchWhenThereIsMatchOnExactlyOneUserWithSurnameDateOfBirthAndPostcodeAndFirstName() {
+    public void shouldReturnMatchingUserWhenThereIsExactlyOneUserWithSurnameDateOfBirthAndPostcodeAndFirstName() {
         String firstName = "any-firstname";
         Person person = aPerson().withId(1233)
             .withFirstName(firstName)
@@ -56,7 +53,7 @@ public class Cycle1MatchingServiceTest {
         when(matchingServiceRequestDto.getMatchingAttributesDto().getFirstName()).thenReturn(getVerifiedFirstName(firstName));
         when(personDAO.getMatchingUsers(any(), any())).thenReturn(Collections.singletonList(person));
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto).get(0)).isEqualTo(person);
     }
 
     @Test
@@ -77,18 +74,18 @@ public class Cycle1MatchingServiceTest {
     }
 
     @Test
-    public void shouldReturnNoMatchWhenDateOfBirthIsNotVerified() {
+    public void shouldReturnEmptyListOfMatchingUsersWhenDateOfBirthIsNotVerified() {
         MatchingAttributesValueDto<LocalDate> dateOfBirth = matchingServiceRequestDto.getMatchingAttributesDto().getDateOfBirth();
 
         when(dateOfBirth.getVerified()).thenReturn(false);
         when(matchingServiceRequestDto.getMatchingAttributesDto().getSurnames()).thenReturn(getAnyListOfSurnamesWithValidatedValue());
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(NO_MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto).isEmpty()).isTrue();
         verify(personDAO, never()).getMatchingUsers(any(), any());
     }
 
     @Test
-    public void shouldReturnNoMatchWhenThereAreNoVerifiedSurnames() {
+    public void shouldReturnEmptyListOfMatchingUsersWhenThereAreNoVerifiedSurnames() {
         List unverifiedSurnameAttributeValues = Collections.singletonList(
             aMatchingAttributesValueDtoBuilder().withValue("some-surname-one").withVerified(false).build()
         );
@@ -96,11 +93,11 @@ public class Cycle1MatchingServiceTest {
         when(matchingServiceRequestDto.getMatchingAttributesDto().getSurnames()).thenReturn(unverifiedSurnameAttributeValues);
         when(matchingServiceRequestDto.getMatchingAttributesDto().getDateOfBirth()).thenReturn(getAnyVerifiedDateOfBirth());
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(NO_MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto).isEmpty()).isTrue();
     }
 
     @Test
-    public void shouldReturnNoMatchWhenThereIsNoVerifiedFirstName() {
+    public void shouldReturnEmptyListOfMatchingUsersWhenThereIsNoVerifiedFirstName() {
         MatchingAttributesValueDto unverifiedFirstName = aMatchingAttributesValueDtoBuilder()
             .withValue("unverified-firstname").withVerified(false).build();
 
@@ -110,7 +107,7 @@ public class Cycle1MatchingServiceTest {
         when(matchingServiceRequestDto.getMatchingAttributesDto().getFirstName()).thenReturn(unverifiedFirstName);
         when(personDAO.getMatchingUsers(any(), any())).thenReturn(Collections.singletonList(anyPerson()));
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(NO_MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto).isEmpty()).isTrue();
     }
 
     @Test
@@ -121,22 +118,22 @@ public class Cycle1MatchingServiceTest {
         when(matchingServiceRequestDto.getMatchingAttributesDto().getFirstName()).thenReturn(null);
         when(personDAO.getMatchingUsers(any(), any())).thenReturn(Collections.singletonList(anyPerson()));
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(NO_MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto).isEmpty()).isTrue();
     }
 
     @Test
-    public void shouldReturnNoMatchWhenThereAreNoUsersWithGivenSurnamesAndDateOfBirth() {
+    public void shouldReturnEmptyListOfMatchingUsersWhenThereAreNoUsersWithGivenSurnamesAndDateOfBirth() {
         List anyListOfSurnamesWithValidatedValue = getAnyListOfSurnamesWithValidatedValue();
         when(matchingServiceRequestDto.getMatchingAttributesDto().getSurnames()).thenReturn(anyListOfSurnamesWithValidatedValue);
         MatchingAttributesValueDto<LocalDate> anyValidatedDateOfBirth = getAnyVerifiedDateOfBirth();
         when(matchingServiceRequestDto.getMatchingAttributesDto().getDateOfBirth()).thenReturn(anyValidatedDateOfBirth);
         when(personDAO.getMatchingUsers(anyListOfSurnamesWithValidatedValue, anyValidatedDateOfBirth.getValue())).thenReturn(emptyList());
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(NO_MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto).isEmpty()).isTrue();
     }
 
     @Test
-    public void shouldCheckForVerifiedFirstNameWhenThereIsNoVerifiedPostCode() {
+    public void shouldReturnMatchingUserWithVerifiedFirstNameWhenThereIsNoVerifiedPostCode() {
         List<AddressDto> unverifiedPostcodeAttributeValues = Collections.singletonList(
             anAddressDtoBuilder().withVerified(false).build()
         );
@@ -151,20 +148,20 @@ public class Cycle1MatchingServiceTest {
         when(matchingServiceRequestDto.getMatchingAttributesDto().getFirstName()).thenReturn(getVerifiedFirstName(firstName));
         when(personDAO.getMatchingUsers(any(), any())).thenReturn(Collections.singletonList(person));
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(Collections.singletonList(person));
     }
 
     @Test
-    public void shouldCheckForFirstNameWhenMultipleRecordsMatchWithVerifiedPostCode() {
+    public void shouldReturnUserWithMatchingFirstNameWhenMultipleRecordsMatchWithVerifiedPostCode() {
         LocalDate dateOfBirth = LocalDate.now().minusYears(10);
-        String firstName = "random-firstname";
-        Person personOne = aPerson()
+        String firstName = "random-first-name";
+        Person userWithNotMatchingFirstName = aPerson()
             .withSurname("some-surname")
-            .withFirstName("not-matching-firstname")
+            .withFirstName("not-matching-first-name")
             .withDateOfBirth(dateOfBirth)
             .withAddress(anAddress().withPostcode("matching-postcode").build())
             .build();
-        Person personTwo = aPerson()
+        Person userWithMatchingFirstName = aPerson()
             .withSurname("some-surname")
             .withFirstName(firstName)
             .withDateOfBirth(dateOfBirth)
@@ -178,14 +175,14 @@ public class Cycle1MatchingServiceTest {
         when(matchingServiceRequestDto.getMatchingAttributesDto().getDateOfBirth()).thenReturn(getAnyVerifiedDateOfBirth());
         when(matchingServiceRequestDto.getMatchingAttributesDto().getAddresses()).thenReturn(addresses);
         when(matchingServiceRequestDto.getMatchingAttributesDto().getFirstName()).thenReturn(getVerifiedFirstName(firstName));
-        when(personDAO.getMatchingUsers(any(), any())).thenReturn(Arrays.asList(personOne, personTwo));
+        when(personDAO.getMatchingUsers(any(), any())).thenReturn(Arrays.asList(userWithNotMatchingFirstName, userWithMatchingFirstName));
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto).get(0)).isEqualTo(userWithMatchingFirstName);
     }
 
     @Test
-    public void shouldReturnNoMatchWhenNoHistoricalPostCodeCanBeMatched() {
-        String firstName = "random-firstname";
+    public void shouldReturnEmptyListOfMatchingUsersWhenHistoricalVerifiedPostCodesDoNotMatch() {
+        String firstName = "random-first-name";
         Person person = aPerson()
             .withFirstName(firstName)
             .withAddress(anAddress().withPostcode("some-postcode").build()).build();
@@ -200,7 +197,7 @@ public class Cycle1MatchingServiceTest {
         when(matchingServiceRequestDto.getMatchingAttributesDto().getFirstName()).thenReturn(getVerifiedFirstName(firstName));
         when(personDAO.getMatchingUsers(any(), any())).thenReturn(Collections.singletonList(person));
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(NO_MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto).isEmpty()).isTrue();
     }
 
     @Test
@@ -220,7 +217,7 @@ public class Cycle1MatchingServiceTest {
         when(matchingServiceRequestDto.getMatchingAttributesDto().getFirstName()).thenReturn(getVerifiedFirstName(firstName));
         when(personDAO.getMatchingUsers(any(), any())).thenReturn(Collections.singletonList(person));
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto).get(0)).isEqualTo(person);
     }
 
     @Test
@@ -235,36 +232,7 @@ public class Cycle1MatchingServiceTest {
         when(matchingServiceRequestDto.getMatchingAttributesDto().getFirstName()).thenReturn(getVerifiedFirstName("AnnMarie"));
         when(personDAO.getMatchingUsers(any(), any())).thenReturn(Collections.singletonList(person));
 
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(MATCH);
-    }
-
-    @Test
-    public void shouldReturnNoMatchWhenMultipleRecordsMatchSurnameDateOfBirthAndPostcodeAndFirstName() {
-        LocalDate dateOfBirth = LocalDate.now().minusYears(10);
-        String firstName = "random-firstname";
-        Person personOne = aPerson()
-            .withSurname("some-surname")
-            .withFirstName(firstName)
-            .withDateOfBirth(dateOfBirth)
-            .withAddress(anAddress().withPostcode("some-postcode").build())
-            .build();
-        Person personTwo = aPerson()
-            .withSurname("some-surname")
-            .withFirstName(firstName)
-            .withDateOfBirth(dateOfBirth)
-            .withAddress(anAddress().withPostcode("some-postcode").build())
-            .build();
-        MatchingAttributesValueDto surnameAttribute = aMatchingAttributesValueDtoBuilder().withValue("some-surname").withVerified(true).build();
-        MatchingAttributesValueDto dateOfBirthAttribute = aMatchingAttributesValueDtoBuilder().withValue(dateOfBirth).withVerified(true).build();
-        AddressDto address = anAddressDtoBuilder().withPostCode("some-postcode").withVerified(true).build();
-
-        when(matchingServiceRequestDto.getMatchingAttributesDto().getSurnames()).thenReturn(Collections.singletonList(surnameAttribute));
-        when(matchingServiceRequestDto.getMatchingAttributesDto().getDateOfBirth()).thenReturn(dateOfBirthAttribute);
-        when(matchingServiceRequestDto.getMatchingAttributesDto().getAddresses()).thenReturn(Collections.singletonList(address));
-        when(matchingServiceRequestDto.getMatchingAttributesDto().getFirstName()).thenReturn(getVerifiedFirstName(firstName));
-        when(personDAO.getMatchingUsers(any(), any())).thenReturn(Arrays.asList(personOne, personTwo));
-
-        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto)).isEqualTo(NO_MATCH);
+        assertThat(cycle1MatchingService.matchUser(matchingServiceRequestDto).get(0)).isEqualTo(person);
     }
 
     @Test
@@ -293,14 +261,13 @@ public class Cycle1MatchingServiceTest {
 
     @Test
     public void shouldNotSaveVerifiedPidInTheDatabaseWhenThereIsNoMatchingUser() {
-        when(personDAO.getMatchingUsers(any(), any())).thenReturn(null);
-        cycle1MatchingService = new Cycle1MatchingService(personDAO, verifiedPidDAO);
+        when(personDAO.getMatchingUsers(any(), any())).thenReturn(emptyList());
 
         MatchingServiceRequestDto requestWithVerifiedSurname = aMatchingServiceRequestDtoBuilder().build();
 
-        MatchStatusResponseDto matchStatusResponseDto = cycle1MatchingService.matchUser(requestWithVerifiedSurname);
+        List<Person> matchingUsers = cycle1MatchingService.matchUser(requestWithVerifiedSurname);
 
-        assertThat(matchStatusResponseDto).isEqualTo(NO_MATCH);
+        assertThat(matchingUsers.isEmpty()).isTrue();
         verify(verifiedPidDAO, never()).save(any(), any());
     }
 
