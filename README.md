@@ -1,6 +1,6 @@
 # Example local matching service for GOV.UK Verify
 
-This is an example local matching service built by the GOV.UK Verify team to demonstrate how a local matching service works and help services building their own. Every government service connecting to Verify must build their own local matching service.
+This is an example local matching service built by the GOV.UK Verify team to demonstrate how a local matching service works and help services building their own. Every government service connecting to Verify must build a local matching service.
 
 :warning: _This is an example implementation and is not production-ready._ :warning:
 
@@ -18,7 +18,7 @@ See the [examples folder](/examples/) for example matching datasets.
 
 This example local matching service uses a SQL database. Refer to the [database schema](/docs/schema.png) for details.
 
-All SQL has been written for Postgres and has not been tested with any engine.
+All SQL has been written for Postgres and has not been tested with any other engine.
 
 ### Matching strategy
 
