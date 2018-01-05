@@ -22,7 +22,7 @@ All SQL has been written for Postgres and has not been tested with any other eng
 
 ### Matching strategy
 
-This example implementation follows a simplified matching strategy from DWP.
+This example implementation follows a [simplified matching strategy from DWP](/docs/architecture-decisions/0003-we-will-follow-dwps-proposed-strategy.org).
 
 The example uses the following attributes:
 
