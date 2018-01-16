@@ -1,7 +1,7 @@
 #!/bin/bash -eux
 
-shutdown="$(realpath shutdown.sh)"
-trap "sh $shutdown" EXIT
+pwd=$PWD
+trap "sh $pwd/shutdown.sh" EXIT
 
 # Start example local matching service with database migration
 ./startup.sh -x clean
