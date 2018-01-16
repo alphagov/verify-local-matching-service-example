@@ -1,0 +1,28 @@
+pipeline {
+  agent none
+  stages {
+
+    stage('Build') {
+      agent {
+        dockerfile {
+         additionalBuildArgs "--pull"
+        }
+      }
+      steps {
+        sh './gradlew build'
+      }
+    }
+
+    stage('Tests') {
+      agent {
+        dockerfile {
+          additionalBuildArgs "--pull"
+        }
+      }
+      steps {
+        sh 'echo "Running unit tests and integration tests"'
+        sh './gradlew test intTest'
+      }
+    }
+  }
+}
