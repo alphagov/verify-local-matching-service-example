@@ -1,18 +1,18 @@
 #!/bin/bash -eux
 
-docker network create --driver bridge db_network
-docker run --network=db_network --name postgres_for_matching_service -d -p 5432:5432 postgres
-
 # wait for the database to come up
 MAX_RETRIES=15
 set +e
 for i in $(seq 1 $MAX_RETRIES); do
-    docker exec postgres_for_matching_service pg_isready -q -h localhost -U postgres
+    psql -h localhost -U "postgres" -c '\q';
     s=$?
-    test "$s" -eq 0 && break || echo "Waiting for postgres to start"; sleep 1
+    test "$s" -eq 0 && break || echo "Waiting for postgres to start"; sleep 5
 done
+echo "Postgres is up"
 set -e
 
 # Start example local matching service with database migration
 ./gradlew clean installDist $@
-DB_URI="jdbc:postgresql://localhost:5432/postgres?user=postgres" ./build/install/verify-local-matching-service-example/bin/verify-local-matching-service-example &
+DB_URI="jdbc:postgresql://db:5432/postgres?user=postgres" ./build/install/myapp/bin/myapp server verify-local-matching-service-example.yml &
+
+sleep 10 # to give the above application time to start

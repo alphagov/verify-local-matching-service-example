@@ -6,7 +6,6 @@ version=`curl -s $server_location/$artifactory_name/maven-metadata.xml | grep re
 zip_name=$artifactory_name-$version.zip
 
 url="$server_location/$artifactory_name/$version/$zip_name"
+
+echo "Downloading the test tool zip file..."
 curl -O $url
-
-
-

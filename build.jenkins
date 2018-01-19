@@ -26,13 +26,9 @@ pipeline {
     }
 
     stage('Run test tool scenarios') {
-      agent {
-        dockerfile { additionalBuildArgs "--pull" }
-      }
+      agent any
       steps {
-        sh './download_test_tool_from_artifactory.sh'
         sh './jenkins.sh'
-
       }
     }
   }
