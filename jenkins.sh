@@ -7,6 +7,6 @@ function cleanup {
 }
 trap cleanup EXIT
 
-./download_test_tool_from_artifactory.sh
+./download-test-tool-from-artifactory.sh
 
-docker-compose run app ./run_test_tool_scenarios.sh
+docker-compose run app ./run-test-tool-scenarios.sh
