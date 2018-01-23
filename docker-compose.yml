@@ -5,9 +5,9 @@ services:
     image: postgres
   app:
     build: .
-    working_dir: /myapp
+    working_dir: /matchingservice
     volumes:
-      - .:/myapp
+      - .:/matchingservice
     links:
       - db
     depends_on:

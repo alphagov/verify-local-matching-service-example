@@ -1,7 +1,7 @@
 #!/bin/bash -eux
 
 # wait for the database to come up
-sleep 20
+sleep 10
 
 # Start example local matching service with database migration
 ./gradlew clean installDist $@
