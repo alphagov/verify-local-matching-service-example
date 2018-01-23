@@ -7,5 +7,3 @@ function cleanup {
 trap cleanup EXIT
 
 docker-compose run app ./run_test_tool_scenarios.sh
-
-docker-compose down -v
