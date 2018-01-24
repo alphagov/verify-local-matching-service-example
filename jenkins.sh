@@ -9,4 +9,5 @@ trap cleanup EXIT
 
 ./download-test-tool-from-artifactory.sh
 
+docker-compose build app
 docker-compose run app ./run-test-tool-scenarios.sh

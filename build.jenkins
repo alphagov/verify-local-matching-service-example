@@ -5,7 +5,7 @@ pipeline {
     stage('Build') {
       agent {
         dockerfile {
-         additionalBuildArgs "--pull"
+         reuseNode true
         }
       }
       steps {
@@ -16,12 +16,12 @@ pipeline {
     stage('Tests') {
       agent {
         dockerfile {
-          additionalBuildArgs "--pull"
+          reuseNode true
         }
       }
       steps {
         sh 'echo "Running unit tests and integration tests"'
-        sh './gradlew test intTest'
+        sh './gradlew clean test intTest'
       }
     }
 

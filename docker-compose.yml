@@ -6,8 +6,6 @@ services:
   app:
     build: .
     working_dir: /matchingservice
-    volumes:
-      - .:/matchingservice
     links:
       - db
     depends_on:
