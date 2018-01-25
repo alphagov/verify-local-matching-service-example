@@ -67,7 +67,7 @@ To run the example local matching service locally, you'll need:
 
 ### Build
 
-To run the matching service without a clean database, run
+To start the matching service without a clean database, run
 
 ```
 ./gradlew installDist
@@ -76,13 +76,13 @@ To run the matching service without a clean database, run
 Then execute
 
 ```
-build/install/verify-local-matching-service-example/bin/verify-local-matching-service-example
+DB_URI="replace_with_actual_database_url" build/install/verify-local-matching-service-example/bin/verify-local-matching-service-example 
 ```
 
-To run the matching service with a clean data, run
+To start the matching service with a clean postgres database, run
 
 ```
-./startup.sh
+docker-compose run -e DB_URI="jdbc:postgresql://db:5432/postgres?user=postgres" app ./gradlew run 
 ```
 
 ### Configuration
@@ -109,7 +109,7 @@ You can run:
 To run all tests:
 
 ```
-pre-commit.sh
+./pre-commit.sh
 ```
 
 **For unit and and integration tests only**

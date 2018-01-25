@@ -1,0 +1,12 @@
+version: '3'
+services:
+  db:
+    container_name: postgres_for_matching_service
+    image: postgres
+  app:
+    build: .
+    working_dir: /matchingservice
+    links:
+      - db
+    depends_on:
+      - db

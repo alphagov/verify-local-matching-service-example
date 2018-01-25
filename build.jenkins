@@ -1,0 +1,35 @@
+pipeline {
+  agent none
+  stages {
+
+    stage('Build') {
+      agent {
+        dockerfile {
+         reuseNode true
+        }
+      }
+      steps {
+        sh './gradlew clean build'
+      }
+    }
+
+    stage('Tests') {
+      agent {
+        dockerfile {
+          reuseNode true
+        }
+      }
+      steps {
+        sh 'echo "Running unit tests and integration tests"'
+        sh './gradlew clean test intTest'
+      }
+    }
+
+    stage('Run test tool scenarios') {
+      agent any
+      steps {
+        sh './jenkins.sh'
+      }
+    }
+  }
+}
