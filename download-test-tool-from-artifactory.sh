@@ -10,4 +10,4 @@ url="$server_location/$artifactory_name/$version/$zip_name"
 echo "Downloading the test tool zip file..."
 curl -O $url
 
-unzip matching-service-test-tool-*.zip
+unzip $zip_name

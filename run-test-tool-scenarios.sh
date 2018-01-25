@@ -1,6 +1,6 @@
 #!/bin/bash -eux
 
-./startup.sh -x clean
+./startup.sh
 
 cd verify-matching-service-test-tool-*/
 
