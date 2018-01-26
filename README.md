@@ -66,7 +66,6 @@ To run the example local matching service locally, you'll need:
 * working version of [Verify Matching Service Test Tool](https://github.com/alphagov/verify-matching-service-adapter/tree/master/verify-matching-service-test-tool)
 
 ### Startup
-
 To start the matching service without a clean database, run
 
 ```
