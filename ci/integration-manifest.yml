@@ -1,0 +1,11 @@
+applications:
+  - name: ((app))
+    memory: 1G
+    command: (cd local-matching-service && bin/local-matching-service server verify-local-matching-service-example.yml)
+    routes:
+      - route: ((app)).apps.internal
+        services:
+          - ((app))-db
+        buildpack: java_buildpack
+        env:
+          JAVA_HOME: "../.java-buildpack/open_jdk_jre"
