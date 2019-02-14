@@ -33,18 +33,6 @@ public class AddressDtoTest {
     }
 
     @Test
-    public void shouldReturnConstraintViolationWhenFromDateIsNull() {
-        AddressDto addressDto = new AddressDtoBuilder().withFromDate(null).build();
-
-        Set<ConstraintViolation<AddressDto>> constraintViolations = validator.validate(addressDto);
-
-        assertEquals(1, constraintViolations.size());
-        ConstraintViolation<AddressDto> violation = constraintViolations.iterator().next();
-        assertEquals("may not be null", violation.getMessage());
-        assertEquals("fromDate", violation.getPropertyPath().toString());
-    }
-
-    @Test
     public void shouldReturnConstraintViolationWhenVerificationIsNull() {
         AddressDto addressDto = new AddressDtoBuilder().withVerified(null).build();
 
