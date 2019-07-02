@@ -10,6 +10,8 @@ jdk:
 matrix:
 before_install:
 - sudo apt-get install jq
+script:
+  - ./jenkins.sh
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
