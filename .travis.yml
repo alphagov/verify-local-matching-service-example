@@ -9,6 +9,9 @@ jdk:
 - openjdk8
 - openjdk11
 
+script:
+  - ./gradlew clean test intTest
+
 before_install:
 - sudo apt-get install jq
 before_cache:
