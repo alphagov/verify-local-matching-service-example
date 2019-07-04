@@ -1,4 +1,4 @@
-FROM govukverify/java8:latest
+FROM openjdk:11-jdk
 
 RUN mkdir /matchingservice
 COPY . /matchingservice
