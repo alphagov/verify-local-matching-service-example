@@ -1,7 +1,5 @@
 # Example local matching service for GOV.UK Verify
 
-[![Build Status](https://travis-ci.org/alphagov/verify-local-matching-service-example.svg?branch=master)](https://travis-ci.org/alphagov/verify-local-matching-service-example)
-
 >**GOV.UK Verify has closed**
 >
 >This repository is out of date and has been archived
