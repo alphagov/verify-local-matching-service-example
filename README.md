@@ -2,6 +2,11 @@
 
 [![Build Status](https://travis-ci.org/alphagov/verify-local-matching-service-example.svg?branch=master)](https://travis-ci.org/alphagov/verify-local-matching-service-example)
 
+>**GOV.UK Verify has closed**
+>
+>This repository is out of date and has been archived
+
+
 This is an example local matching service built by the GOV.UK Verify team to demonstrate how a local matching service works and help services building their own. Every government service connecting to Verify must build a local matching service.
 
 :warning: _This is an example implementation and is not production-ready._ :warning:
